@@ -12,12 +12,17 @@ import systemManageIndex from '@/page/nav1/systemManage/index.vue'
 import roleManage from '@/page/nav1/systemManage/roleManage.vue'
 import accountManage from '@/page/nav1/systemManage/accountManage.vue'
 import categoryManage from '@/page/nav1/systemManage/categoryManage.vue'
+import addRole from '@/page/nav1/systemManage/addRole.vue'
 /*账号管理end*/
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
+    {
+      path:'/',
+      redirect:'/index/nav1/advertiseManage'
+    },
     {
       path: '/index',
       name: 'index',
@@ -44,6 +49,7 @@ export default new Router({
               component: projectManageIndex,
               name: 'projectManageIndex'
             },
+            /*系统管理start*/
             {
               path: 'systemManage',
               component: systemManageIndex,
@@ -63,7 +69,13 @@ export default new Router({
               path: 'systemCategoryManage',
               component: categoryManage,
               name: 'categoryManage'
+            },
+            {
+              path: 'systemAddRole',
+              component: addRole,
+              name: 'addRole'
             }
+            /*系统管理End*/
           ]
         }
       ]

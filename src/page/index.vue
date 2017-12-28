@@ -34,7 +34,7 @@
     flex-direction: column;
     .index-nav {
       display: flex;
-      background: #323542;
+      background: #161824;
       height: 62px;
       .nav {
         flex: 1;
@@ -59,7 +59,7 @@
       }
       .title {
         height: 60px;
-        background: #323542;
+        background: #161824;
         color: #fff;
         display: flex;
         align-items: center;
@@ -67,8 +67,6 @@
         width: 200px;
         font-weight: bold;
         font-size: 32px;
-        border-bottom: 1px solid #434552;
-        border-right: 1px solid #434552;
         box-sizing: border-box;
       }
       .user-info {
