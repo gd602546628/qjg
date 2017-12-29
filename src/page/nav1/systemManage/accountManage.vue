@@ -58,7 +58,7 @@
         </div>
       </div>
       <div class="form-right">
-        <el-button type="primary" class="add-btn" icon="el-icon-plus">添加账号</el-button>
+        <el-button type="primary" class="add-btn" icon="el-icon-plus" @click.stop="goAdd">添加账号</el-button>
         <el-button type="primary" class="select-btn" icon="el-icon-search">检索</el-button>
       </div>
     </div>
@@ -188,6 +188,11 @@
       delete(index, item){
       },
       start(index, item){
+      },
+      goAdd(){
+          this.$router.push({
+            name:'addAccount'
+          })
       }
     },
   }

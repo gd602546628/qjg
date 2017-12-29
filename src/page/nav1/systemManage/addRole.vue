@@ -4,26 +4,18 @@
     <div class="form">
       <div class="title">添加角色</div>
       <div class="middle">
-        <div class="middle-input">
-          <div class="label">
-            <span>*</span>
-            <p>角色名称：</p>
-          </div>
-          <div class="input">
-            <el-input v-model="input" placeholder="名称为1-20位汉子、字母、数字、特殊字符"></el-input>
-          </div>
-        </div>
-        <div class="middle-checkbox">
-          <div class="label">
-            <span>*</span>
-            <p>权限配置：</p>
-          </div>
-          <div class="checkbox-group">
-            <el-checkbox v-model="checked" class="box">广告管理</el-checkbox>
-            <el-checkbox v-model="checked" class="box">区域管理</el-checkbox>
-            <el-checkbox v-model="checked" class="box">项目管理</el-checkbox>
-          </div>
-        </div>
+        <el-form :model="formData" :rules="rules" class="middle-input" ref="form">
+          <el-form-item label="角色名称：" prop="name" class="input-item">
+            <el-input v-model="formData.name" placeholder="名称为1-20位汉子、字母、数字、特殊字符"></el-input>
+          </el-form-item>
+          <el-form-item label="权限配置：" prop="type" class="check-wrap">
+            <el-checkbox-group v-model="formData.type">
+              <el-checkbox label="广告管理" name="type"></el-checkbox>
+              <el-checkbox label="区域管理" name="type"></el-checkbox>
+              <el-checkbox label="项目管理" name="type"></el-checkbox>
+            </el-checkbox-group>
+          </el-form-item>
+        </el-form>
       </div>
       <div class="bottom">
         <div class="bottom-item">
@@ -37,7 +29,7 @@
       </div>
     </div>
     <div class="confirm-btn">
-      <div class="q-btn-confirm">确定</div>
+      <div class="q-btn-confirm" @click.stop="submit">确定</div>
       <div class="q-btn-cancel">取消</div>
     </div>
   </div>
@@ -48,19 +40,37 @@
   export default{
     data(){
       return {
+        formData: {
+          name: '',
+          type: []
+        },
         checked: false,
-        input: ''
+        input: '',
+        rules: {
+          name: [
+            {required: true, message: '请输入角色名称', trigger: 'blur'},
+            {min: 1, max: 20, message: '名称为1-20位汉子、字母、数字、特殊字符', trigger: 'blur'}
+          ],
+          type: [
+            {type: 'array', required: true, message: '请至少选择一个权限配置', trigger: 'change'}
+          ],
+        }
       }
     },
-    methods:{
-        goBack(){
-            this.$router.back()
+    methods: {
+      goBack(){
+        this.$router.back()
+      },
+      submit(){
+        this.$refs.form.validate(valid => {
+          console.log(valid)
+        })
       }
     }
   }
 </script>
 
-<style lang='scss' rel='stylesheet/scss' scoped>
+<style lang='scss' rel='stylesheet/scss'>
   .add-role {
     .return {
       background: #fe842b;
@@ -99,9 +109,29 @@
         margin-bottom: 26px;
         border-bottom: 1px dashed #d9d9d9;
         .middle-input {
-          display: flex;
           width: 600px;
           margin-top: 36px;
+          .input-item {
+            display: flex;
+            width: 100%;
+            .el-form-item__content {
+              flex: 1;
+            }
+          }
+          .check-wrap {
+            display: flex;
+            .el-checkbox-group {
+              flex: 1;
+              display: flex;
+              flex-direction: column;
+              .el-checkbox {
+                margin-left: 0;
+              }
+            }
+            .el-form-item__error {
+              width: 400px;
+            }
+          }
           .input {
             flex: 1;
           }
@@ -128,7 +158,7 @@
         flex-direction: column;
         align-items: center;
         margin-bottom: 26px;
-        padding-left: 208px;
+        padding-left: 183px;
         .bottom-item {
           width: 600px;
           display: flex;
@@ -139,7 +169,7 @@
         }
       }
     }
-    .confirm-btn{
+    .confirm-btn {
       display: flex;
       align-items: center;
       justify-content: center;

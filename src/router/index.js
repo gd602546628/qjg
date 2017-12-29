@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Index from '@/page/index.vue'
-
+import login from '@/page/login.vue'
 import nav1 from '@/page/nav1/nav1.index.vue'
 import advertiseManageIndex from '@/page/nav1/advertiseManage/index.vue'
 import areaManageIndex from '@/page/nav1/areaManage/index.vue'
@@ -13,6 +13,7 @@ import roleManage from '@/page/nav1/systemManage/roleManage.vue'
 import accountManage from '@/page/nav1/systemManage/accountManage.vue'
 import categoryManage from '@/page/nav1/systemManage/categoryManage.vue'
 import addRole from '@/page/nav1/systemManage/addRole.vue'
+import addAcount from '@/page/nav1/systemManage/addAccount.vue'
 /*账号管理end*/
 
 Vue.use(Router)
@@ -20,13 +21,19 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {
-      path:'/',
-      redirect:'/index/nav1/advertiseManage'
+      path: '/',
+      redirect: '/index/nav1/advertiseManage'
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: login
     },
     {
       path: '/index',
       name: 'index',
       component: Index,
+      redirect:'/index/nav1',
       children: [
         {
           path: 'nav1',
@@ -74,6 +81,11 @@ export default new Router({
               path: 'systemAddRole',
               component: addRole,
               name: 'addRole'
+            },
+            {
+              path: 'systemAddAccount',
+              component: addAcount,
+              name: 'addAccount'
             }
             /*系统管理End*/
           ]
