@@ -23,7 +23,6 @@
     created(){
     },
     mounted(){
-      this.$refs.index.style.height = document.documentElement.clientHeight + 'px'
     },
     methods: {}
   }
@@ -32,6 +31,7 @@
   .index {
     display: flex;
     flex-direction: column;
+    height: 100%;
     .index-nav {
       display: flex;
       background: #161824;

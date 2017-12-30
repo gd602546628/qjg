@@ -3,10 +3,15 @@ import Router from 'vue-router'
 import Index from '@/page/index.vue'
 import login from '@/page/login.vue'
 import nav1 from '@/page/nav1/nav1.index.vue'
-import advertiseManageIndex from '@/page/nav1/advertiseManage/index.vue'
+/*广告管理start*/
+import advertiseManage from '@/page/nav1/advertiseManage/advertiseManage.vue'
+import addAdvertise from '@/page/nav1/advertiseManage/addAdvertise.vue'
+/*广告管理END*/
 import areaManageIndex from '@/page/nav1/areaManage/index.vue'
+/*项目管理start*/
 import projectManageIndex from '@/page/nav1/projectManage/index.vue'
-
+import lookProject from '@/page/nav1/projectManage/lookProject'
+/*项目管理END*/
 /*账号管理start*/
 import systemManageIndex from '@/page/nav1/systemManage/index.vue'
 import roleManage from '@/page/nav1/systemManage/roleManage.vue'
@@ -33,7 +38,7 @@ export default new Router({
       path: '/index',
       name: 'index',
       component: Index,
-      redirect:'/index/nav1',
+      redirect: '/index/nav1',
       children: [
         {
           path: 'nav1',
@@ -41,21 +46,35 @@ export default new Router({
           name: 'nav1',
           redirect: '/index/nav1/advertiseManage',
           children: [
+            /*广告管理start*/
             {
               path: 'advertiseManage',
-              component: advertiseManageIndex,
+              component: advertiseManage,
               name: 'advertiseManageIndex'
             },
+            {
+              path: 'addAdvertise',
+              component: addAdvertise,
+              name: 'addAdvertise'
+            },
+            /*广告管理End*/
             {
               path: 'areaManage',
               component: areaManageIndex,
               name: 'areaManageIndex'
             },
+            /*项目管理start*/
             {
               path: 'projectManage',
               component: projectManageIndex,
               name: 'projectManageIndex'
             },
+            {
+              path: 'lookProject',
+              component: lookProject,
+              name: 'lookProject'
+            },
+            /*项目管理End*/
             /*系统管理start*/
             {
               path: 'systemManage',

@@ -82,6 +82,7 @@
 </script>
 <style lang='scss' rel='stylesheet/scss'>
   .addAccount-page {
+    padding: 20px;
     .return {
       background: #fe842b;
       color: #ffffff;

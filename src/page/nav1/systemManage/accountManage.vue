@@ -190,15 +190,16 @@
       start(index, item){
       },
       goAdd(){
-          this.$router.push({
-            name:'addAccount'
-          })
+        this.$router.push({
+          name: 'addAccount'
+        })
       }
     },
   }
 </script>
 <style lang='scss' rel='stylesheet/scss' scoped>
   .account-manage {
+    padding: 20px;
     .title {
       color: #525252;
     }

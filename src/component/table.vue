@@ -17,6 +17,8 @@
       <el-table-column label="序号" width="80">
         <template slot-scope="scope">
           {{scope.$index + 1}}
+
+
         </template>
       </el-table-column>
       <el-table-column
@@ -34,7 +36,7 @@
               class="operation-item"
               v-for="item in scope.row.operation"
               :style="{color:item.color}"
-              @click="item.handle(scope.$index, scope.row)">{{item.label}}
+              @click="item.handle&&item.handle(scope.$index, scope.row)">{{item.label}}
             </div>
           </div>
         </template>
@@ -42,7 +44,6 @@
     </el-table>
     <div class="delete-btn" v-if="!hideDelete" @click.stop="deleteAll">
       批量删除
-
     </div>
   </div>
 </template>
@@ -126,7 +127,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-     cursor: pointer;
+      cursor: pointer;
       .operation-item {
         flex: 1;
         display: flex;

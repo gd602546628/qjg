@@ -115,6 +115,7 @@
 </script>
 <style lang='scss' rel='stylesheet/scss' scoped>
   .role-manage {
+    padding: 20px;
     .title {
       color: #525252;
     }

@@ -72,6 +72,7 @@
 
 <style lang='scss' rel='stylesheet/scss'>
   .add-role {
+    padding: 20px;
     .return {
       background: #fe842b;
       color: #ffffff;

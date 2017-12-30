@@ -23,7 +23,6 @@ let login = function () {
     let fn = function () {
       _loginPromise = null
     }
-    console.log(333333333)
     Router.push({
       name: 'login', params: {resolve, reject, fn}
     })
