@@ -1,7 +1,7 @@
 <template>
   <div class="lookProject">
-    <div class="page-title">项目管理</div>
-    <common-box title="项目管理" :showBack="false">
+    <!--<div class="page-title">项目管理</div>-->
+    <common-box title="项目管理" :showBack="true">
       <div class="project-image">
         <div class="item-wrap" v-for="item in new Array(20)">
           <div class="item">
