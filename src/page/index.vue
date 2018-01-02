@@ -19,6 +19,7 @@
 </template>
 <script>
   import {mapGetters, mapActions} from 'vuex'
+  import Api from '@/api/api'
   export default {
     data() {
       return {}
@@ -29,11 +30,11 @@
     created(){
     },
     mounted(){
-      console.log(this.sysUserBg)
     },
     methods: {
       ...mapActions(['logoutAction']),
       logout(){
+        Api.logout()
         this.logoutAction()
         this.$router.push({
           name: 'login'
@@ -92,6 +93,7 @@
         box-sizing: border-box;
         p {
           color: #fff;
+          cursor: pointer;
         }
         .line {
           background: #4f515b;

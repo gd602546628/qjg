@@ -6,7 +6,7 @@ import Util from '@/service/util'
 import store from '@/store/index'
 import {code} from '@/config/config'
 import router from '@/router/index'
-import {MessageBox} from 'element-ui'
+import {Message} from 'element-ui';
 class Http {
   constructor() {
   }
@@ -15,10 +15,9 @@ class Http {
     let resultUrl = `${url};JSESSIONID=${store.getters.JSESSIONID}`
     let data = await axios.post(resultUrl, params)
     if (data.data.code === code.NO_AUTHORITY) { // 无权限访问
-      MessageBox.alert('登录已失效', '').then(() => {
-        router.push({
-          name: 'login'
-        })
+      Message({message: '登录已失效，请重新登录', type: 'error'})
+      router.push({
+        name: 'login'
       })
       throw new Error()
     }

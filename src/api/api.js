@@ -13,6 +13,12 @@ class Api {
     return data
   }
 
+  /*登录*/
+  async logout(params = {}) {
+    let data = await httpService.post(config.logoutUrl, params)
+    return data
+  }
+
 // 获取可配置角色权限列表
   async getUrls() {
     let data = await httpService.post(config.getUrls)
@@ -46,6 +52,24 @@ class Api {
   // 启用停用账号
   async updateStatus(params = {}) {
     let data = await httpService.post(config.updateStatus, params)
+    return data
+  }
+
+  // 更新账号
+  async updateUser(params = {}) {
+    let data = await httpService.post(config.updateUser, params)
+    return data
+  }
+
+  // 更新账号密码
+  async updateUserPassword(params = {}) {
+    let data = await httpService.post(config.updateUserPassword, params)
+    return data
+  }
+
+// 删除用户
+  async deleteUser(params = {}) {
+    let data = await httpService.post(config.deleteUser, params)
     return data
   }
 }

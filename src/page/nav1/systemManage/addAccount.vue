@@ -98,6 +98,8 @@
         let data = await Api.addUser(params)
         if (data && data.code == code.SUCCESS) {
           this.$router.back()
+        } else {
+          this.$message.error(data.mesg)
         }
       }
     }

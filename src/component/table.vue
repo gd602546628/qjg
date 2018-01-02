@@ -122,6 +122,7 @@
       width: 114px;
       height: 32px;
       margin-top: 14px;
+      cursor: pointer;
     }
     .operation {
       display: flex;
