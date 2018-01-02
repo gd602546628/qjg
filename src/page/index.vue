@@ -7,24 +7,39 @@
         <div class="date">2017年12月01日</div>
       </div>
       <div class="user-info">
-        <p>Super</p>
+        <p>{{sysUserBg.account}}</p>
+        <div class="line"></div>
         <p>修改信息</p>
-        <p>退出</p>
+        <div class="line"></div>
+        <p class="logout" @click="logout">退出</p>
       </div>
     </div>
     <router-view class="index-page"/>
   </div>
 </template>
 <script>
+  import {mapGetters, mapActions} from 'vuex'
   export default {
     data() {
       return {}
     },
+    computed: {
+      ...mapGetters(['sysUserBg'])
+    },
     created(){
     },
     mounted(){
+      console.log(this.sysUserBg)
     },
-    methods: {}
+    methods: {
+      ...mapActions(['logoutAction']),
+      logout(){
+        this.logoutAction()
+        this.$router.push({
+          name: 'login'
+        })
+      }
+    }
   }
 </script>
 <style lang='scss' rel='stylesheet/scss' scoped>
@@ -59,7 +74,7 @@
       }
       .title {
         height: 60px;
-        background: #161824;
+        background: #1d1d27;
         color: #fff;
         display: flex;
         align-items: center;
@@ -68,6 +83,7 @@
         font-weight: bold;
         font-size: 32px;
         box-sizing: border-box;
+        letter-spacing: 2px;
       }
       .user-info {
         display: flex;
@@ -76,15 +92,16 @@
         box-sizing: border-box;
         p {
           color: #fff;
-          margin-right: 16px;
-          &:nth-child(2) {
-            border-left: 1px solid #fff;
-            padding-left: 10px;
-          }
-          &:nth-child(3) {
-            border-left: 1px solid #fff;
-            padding-left: 10px;
-          }
+        }
+        .line {
+          background: #4f515b;
+          height: 16px;
+          width: 1px;
+          margin: 0 22px;
+        }
+        .logout {
+          color: red;
+          margin-right: 20px;
         }
       }
     }

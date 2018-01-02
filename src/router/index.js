@@ -97,14 +97,20 @@ export default new Router({
               name: 'categoryManage'
             },
             {
-              path: 'systemAddRole',
+              path: 'systemAddRole/:id?',
               component: addRole,
-              name: 'addRole'
+              name: 'addRole',
+              meta: {
+                activeName: 'roleManage'
+              }
             },
             {
               path: 'systemAddAccount',
               component: addAcount,
-              name: 'addAccount'
+              name: 'addAccount',
+              meta: {
+                activeName: 'accountManage'
+              }
             }
             /*系统管理End*/
           ]

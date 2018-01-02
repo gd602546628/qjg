@@ -11,38 +11,37 @@
           <el-form-item label="账号：" prop="account">
             <el-input v-model="formData1.account"></el-input>
           </el-form-item>
-          <el-form-item label="备注：" prop="remarks">
-            <el-input type="textarea" v-model="formData1.remarks"></el-input>
+          <el-form-item label="密码：" prop="password">
+            <el-input v-model="formData1.password"></el-input>
           </el-form-item>
         </el-form>
       </div>
       <div class="bottom">
         <el-form :model="formData2" :rules="rules2" ref="form2">
           <el-form-item label="选择角色：" prop="role" class="check-wrap">
-            <el-checkbox-group v-model="formData2.role">
-              <el-checkbox label="项目管理员" name="role"></el-checkbox>
-              <el-checkbox label="区域管理员" name="role"></el-checkbox>
-              <el-checkbox label="广告管理员" name="role"></el-checkbox>
-              <el-checkbox label="系统管理员" name="role"></el-checkbox>
-            </el-checkbox-group>
+            <el-radio-group v-model="formData2.role">
+              <el-radio :label="item" name="role" v-for="item in roleList">{{item.roleName}}</el-radio>
+            </el-radio-group>
           </el-form-item>
         </el-form>
       </div>
     </div>
     <div class="confirm-btn">
       <div class="q-btn-confirm" @click.stop="submit">确定</div>
-      <div class="q-btn-cancel">取消</div>
+      <div class="q-btn-cancel" @click.stop="goBack">取消</div>
     </div>
   </div>
 </template>
 <script>
+  import Api from '@/api/api'
+  import {code} from '@/config/config'
   export default{
     data(){
       return {
         formData1: {
           name: '',
           account: '',
-          remarks: ''
+          password: ''
         },
         rules1: {
           name: [
@@ -53,29 +52,53 @@
             {required: true, message: '请输入账号', trigger: 'blur'},
             {min: 1, max: 20, message: '名称为1-20位汉子、字母、数字、特殊字符', trigger: 'blur'}
           ],
-          remarks: [
-            {required: true, message: '请输入备注', trigger: 'blur'},
+          password: [
+            {required: true, message: '请输入密码', trigger: 'blur'},
             {min: 1, max: 20, message: '名称为1-20位汉子、字母、数字、特殊字符', trigger: 'blur'}
           ]
         },
         formData2: {
-          role: []
+          role: null
         },
         rules2: {
-          role: [{type: 'array', required: true, message: '请至少选择一个角色', trigger: 'change'}]
-        }
+          role: [{required: true, message: '请至少选择一个角色', trigger: 'change'}]
+        },
+        roleList: [], // 角色列表
       }
+    },
+    created(){
+      this.getRoleList()
     },
     methods: {
       goBack(){
         this.$router.back()
       },
       submit(){
+        console.log(this.formData2)
         this.$refs.form1.validate(vali1 => {
           this.$refs.form2.validate(vali2 => {
-            console.log(vali1 && vali2)
+            if (vali1 && vali2) {
+              this.addUser()
+            }
           })
         })
+      },
+      async getRoleList(){
+        let data = await Api.getAllRole()
+        this.roleList = data.data.list
+      },
+      async addUser(){
+        let params = {
+          name: this.formData1.name,
+          account: this.formData1.account,
+          password: this.formData1.password,
+          roleId: this.formData2.role.id,
+          roleName: this.formData2.role.roleName
+        }
+        let data = await Api.addUser(params)
+        if (data && data.code == code.SUCCESS) {
+          this.$router.back()
+        }
       }
     }
   }

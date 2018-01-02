@@ -3,7 +3,7 @@
  */
 import localStorage from '@/service/localStorage/localStorage.service'
 export default {
-  JSESSIONID: localStorage.getStorage('JSESSIONID') || '1111',
-  sysAuthUrls: localStorage.getStorage('sysAuthUrls') || '1111',
-  sysUserBg: localStorage.getStorage('sysUserBg') || '11111'
+  JSESSIONID: localStorage.getStorage('JSESSIONID'),
+  sysAuthUrls: localStorage.getStorage('sysAuthUrls'),
+  sysUserBg: localStorage.getStorage('sysUserBg')
 }

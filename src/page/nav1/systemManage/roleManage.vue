@@ -5,24 +5,26 @@
       <div class="form-left">
         <div class="form-item">
           <span>角色名称：</span>
-          <el-input placeholder="请输入角色名称" class="input" v-model="name"></el-input>
+          <el-input placeholder="请输入角色名称" class="input" v-model="selectOption.roleName"></el-input>
         </div>
         <div class="form-item date-picker">
           <div class="wrap">
             <span>创建时间：</span>
             <el-date-picker
-              v-model="startTime"
+              v-model="selectOption.startTime"
               type="datetime"
               placeholder="选择开始时间"
               class="picker"
+              value-format="yyyy-MM-dd HH:mm:ss"
             >
             </el-date-picker>
             <span class="line"></span>
             <el-date-picker
-              v-model="endTime"
+              v-model="selectOption.endTime"
               type="datetime"
               placeholder="选择结束时间"
               class="picker"
+              value-format="yyyy-MM-dd HH:mm:ss"
             >
             </el-date-picker>
           </div>
@@ -30,7 +32,7 @@
       </div>
       <div class="form-right">
         <el-button type="primary" class="add-btn" icon="el-icon-plus" @click.stop="goAdd">添加角色</el-button>
-        <el-button type="primary" class="select-btn" icon="el-icon-search">检索</el-button>
+        <el-button type="primary" class="select-btn" icon="el-icon-search" @click.stop="select">检索</el-button>
       </div>
     </div>
     <q-table :tableHeader="tableHeader"
@@ -42,8 +44,10 @@
       <el-pagination
         background
         layout="prev, pager, next"
-        :total="1000"
+        :total="total"
         @current-change="loadPage"
+        :page-size="this.selectOption.pageSize"
+        :page-count="pageCount"
       >
       </el-pagination>
     </div>
@@ -51,6 +55,7 @@
 </template>
 <script>
   import qTable from '@/component/table.vue'
+  import Api from '@/api/api'
   export default{
     components: {
       qTable
@@ -61,24 +66,22 @@
         tableHeader: [
           {
             label: '角色名称',
-            prop: 'name'
+            prop: 'roleName'
           },
           {
             label: '创建账号',
-            prop: 'account'
+            prop: 'createUser'
           },
           {
             label: '创建时间',
-            prop: 'time'
+            prop: 'createTime'
           }
         ],
         operation: [
           {
             label: '修改',
             color: '#20a7fe',
-            handle(index, item){
-              console.log(index, item)
-            },
+            handle: this.editHanld,
           },
           {
             label: '删除',
@@ -88,27 +91,59 @@
             },
           }
         ],
-        name: '',
-        startTime: '',
-        endTime: ''
+        selectOption: {
+          roleName: '',
+          startTime: '',
+          endTime: '',
+          pageNum: 1,
+          pageSize: 20
+        },
+        pageCount: 1,
+        total: 1
       }
     },
     created(){
-      for (let i = 0; i < 20; i++) {
-        this.tableData.push({name: 'dance flow', account: '系统管理员', time: '2017-11-23', operation: this.operation})
-      }
+      this.init()
     },
     methods: {
       loadPage(currentPage){ // 点击分页器
         console.log(currentPage)
       },
       goAdd(){
-          this.$router.push({
-            name:'addRole'
-          })
+        this.$router.push({
+          name: 'addRole'
+        })
       },
       deleteAll(val){
-          console.log(val)
+        console.log(val)
+      },
+      async getAllRole(){
+        let data = await Api.getAllRole(this.selectOption)
+        data = data.data
+        this.total = data.allCount
+        this.pageCount = data.totalPage
+        let list = data.list
+        list.forEach(item => {
+          item.operation = this.operation
+        })
+        return list
+      },
+      async init(){
+        let list = await this.getAllRole()
+        this.tableData = list
+      },
+      async select(){
+        this.selectOption.pageNum = 1
+        let list = await this.getAllRole()
+        this.tableData = list
+      },
+      editHanld(index, item){
+        this.$router.push({
+          name: 'addRole',
+          params: {
+            id: item.id
+          }
+        })
       }
     }
   }

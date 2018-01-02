@@ -9,34 +9,43 @@
             <el-input v-model="formData.name" placeholder="名称为1-20位汉子、字母、数字、特殊字符"></el-input>
           </el-form-item>
           <el-form-item label="权限配置：" prop="type" class="check-wrap">
-            <el-checkbox-group v-model="formData.type">
-              <el-checkbox label="广告管理" name="type"></el-checkbox>
-              <el-checkbox label="区域管理" name="type"></el-checkbox>
-              <el-checkbox label="项目管理" name="type"></el-checkbox>
-            </el-checkbox-group>
+            <!-- <el-checkbox-group v-model="formData.type">
+               <el-checkbox label="广告管理" name="type"></el-checkbox>
+               <el-checkbox label="区域管理" name="type"></el-checkbox>
+               <el-checkbox label="项目管理" name="type"></el-checkbox>
+             </el-checkbox-group>-->
+            <el-tree :data="urlData"
+                     show-checkbox
+                     default-expand-all
+                     :expand-on-click-node="false"
+                     @check-change="checkChange"
+                     ref="tree"
+            >
+            </el-tree>
           </el-form-item>
         </el-form>
       </div>
-      <div class="bottom">
-        <div class="bottom-item">
-          <el-checkbox v-model="checked" class="box">系统设置</el-checkbox>
-        </div>
-        <div class="bottom-item">
-          <el-checkbox v-model="checked" class="box">角色管理</el-checkbox>
-          <el-checkbox v-model="checked" class="box">账号管理</el-checkbox>
-          <el-checkbox v-model="checked" class="box">分类管理</el-checkbox>
-        </div>
-      </div>
+      <!-- <div class="bottom">
+         <div class="bottom-item">
+           <el-checkbox v-model="checked" class="box">系统设置</el-checkbox>
+         </div>
+         <div class="bottom-item">
+           <el-checkbox v-model="checked" class="box">角色管理</el-checkbox>
+           <el-checkbox v-model="checked" class="box">账号管理</el-checkbox>
+           <el-checkbox v-model="checked" class="box">分类管理</el-checkbox>
+         </div>
+       </div>-->
     </div>
     <div class="confirm-btn">
       <div class="q-btn-confirm" @click.stop="submit">确定</div>
-      <div class="q-btn-cancel">取消</div>
+      <div class="q-btn-cancel" @click.stop="goBack">取消</div>
     </div>
   </div>
 </template>
 
 
 <script>
+  import Api from '@/api/api'
   export default{
     data(){
       return {
@@ -54,8 +63,15 @@
           type: [
             {type: 'array', required: true, message: '请至少选择一个权限配置', trigger: 'change'}
           ],
-        }
+        },
+        urlData: []
       }
+    },
+    created(){
+      Api.getUrls().then(data => {
+        this.urlData = data.data
+        this.dataFormat(this.urlData)
+      })
     },
     methods: {
       goBack(){
@@ -63,8 +79,37 @@
       },
       submit(){
         this.$refs.form.validate(valid => {
-          console.log(valid)
+          if (valid) {
+            let ids = []
+            this.formData.type.forEach(item => {
+              ids.push(item.id)
+            })
+            Api.addOrUpdateRole({
+              roleName: this.formData.name,
+              urls: ids,
+              id: this.$route.params.id || null
+            }).then(data => {
+              this.$router.back()
+            })
+          }
         })
+      },
+      dataFormat(data){ // 处理getUrls返回数据，适配tree组件
+        let step = function (item) {
+          item.children = item.childs
+          item.label = item.name
+          if (item.childs && item.childs.length > 0) { //有子列表
+            item.childs.forEach(child => {
+              step(child)
+            })
+          }
+        }
+        data.forEach(item => {
+          step(item)
+        })
+      },
+      checkChange(a, b, c){
+        this.formData.type = this.$refs.tree.getCheckedNodes()
       }
     }
   }
@@ -109,6 +154,11 @@
         align-items: center;
         margin-bottom: 26px;
         border-bottom: 1px dashed #d9d9d9;
+        .check-wrap {
+          .el-form-item__content {
+            flex: 1;
+          }
+        }
         .middle-input {
           width: 600px;
           margin-top: 36px;
@@ -150,6 +200,22 @@
             flex-direction: column;
             .box {
               margin: 0 0 20px 0;
+            }
+          }
+        }
+        .el-tree {
+          .el-tree-node__content {
+            padding: 0 !important;
+            margin-bottom: 8px;
+            margin-top: 6px;
+          }
+          .el-tree-node__expand-icon {
+            display: none;
+          }
+          .el-tree-node__children {
+            display: flex;
+            .el-tree-node {
+              flex: 1;
             }
           }
         }

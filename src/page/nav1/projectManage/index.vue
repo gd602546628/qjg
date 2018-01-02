@@ -1,15 +1,18 @@
 <template>
   <div class="page-wrap">
-    <div class="category-manage-box">
-      <div class="title">分类管理</div>
-      <div class="add-category">
-        <span class="el-icon-plus"></span>
-        <div>添加分类</div>
-      </div>
-      <ul class="category-list">
-        <li>极中心</li>
-        <li>极中心</li>
-      </ul>
+    <div class="project-category-manage-box">
+      <el-scrollbar class="scroll-bar">
+        <div class="scroll-bar-content">
+          <div class="title">分类管理</div>
+          <div class="add-category">
+            <span class="el-icon-plus"></span>
+            <div>添加分类</div>
+          </div>
+          <ul class="category-list">
+            <li>极中心</li>
+          </ul>
+        </div>
+      </el-scrollbar>
     </div>
     <div class="category-manage">
       <div class="select-form">
@@ -214,38 +217,49 @@
         }
       }
     }
-    .category-manage-box {
-      background: #281e26;
+    .project-category-manage-box {
+      overflow: hidden;
+      background-image: url("../../../assets/image/xmgl_bg.png");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
       min-width: 210px;
       border-top: 1px solid #434552;
-      padding: 20px;
       height: 100%;
-      .title {
-        color: #ffffff;
-        font-weight: 600;
-      }
-      .add-category {
-        background: #ffffff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 30px;
-        color: #20a7fe;
-        margin: 20px 0 14px 0;
-        cursor: pointer;
-        span {
-          margin-right: 6px;
-        }
-      }
-      .category-list {
-        li {
-          padding-left: 20px;
-          color: #ffffff;
-          height: 22px;
-          margin-top: 6px;
-          &:hover {
-            background: #443f45;
+      .scroll-bar {
+        height: 100%;
+        position: relative;
+        bottom: -17px;
+        .scroll-bar-content {
+          padding: 20px;
+          .title {
+            color: #ffffff;
+            font-weight: 600;
+          }
+          .add-category {
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 30px;
             color: #20a7fe;
+            margin: 20px 0 14px 0;
+            cursor: pointer;
+            span {
+              margin-right: 6px;
+            }
+          }
+          .category-list {
+            li {
+              padding-left: 20px;
+              color: #ffffff;
+              height: 22px;
+              margin-top: 6px;
+              &:hover {
+                background: #443f45;
+                color: #20a7fe;
+              }
+            }
           }
         }
       }

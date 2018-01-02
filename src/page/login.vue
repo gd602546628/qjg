@@ -1,7 +1,9 @@
 <template>
   <div class="login-page">
     <div class="wrap">
-      <div class="logo"></div>
+      <div class="logo">
+        <img src="../assets/image/logo.png"/>
+      </div>
       <div class="login-box">
         <div class="login">
           <div class="title">用户登录</div>
@@ -27,7 +29,7 @@
             <div class="change">看不清，换一张</div>
           </div>
           <div class="btn-group">
-            <div class="btn">立即登录</div>
+            <div class="btn" @click="login">立即登录</div>
             <div class="btn cancel">注册</div>
           </div>
           <div class="forget">忘记密码</div>
@@ -66,7 +68,6 @@
           password: this.password
         })
         if (data.code === code.SUCCESS) {
-          console.log(this.$route.params)
           if (this.$route.params.resolve) {
             this.$route.params.resolve(data.data)
             this.$route.params.fn()
@@ -87,7 +88,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    background-image: url("../assets/image/bg.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
     .wrap {
+      display: flex;
+      align-items: center;
+      .logo{
+        margin-right: 122px;
+      }
       .login-box {
         width: 380px;
         box-sizing: border-box;
@@ -158,6 +168,7 @@
               color: #ffffff;
               border-radius: 6px;
               box-sizing: border-box;
+              cursor: pointer;
               &.cancel {
                 background: none;
                 border: 1px solid #ffffff;
