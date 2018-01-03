@@ -6,10 +6,12 @@ import router from './router'
 import Element from 'element-ui'
 import './assets/css/element.scss'
 import './assets/css/common.scss'
+import './assets/css/font.scss'
 import store from './store/index'
 Vue.use(Element)
 Vue.config.productionTip = false
 
+/*权限验证*/
 router.beforeEach((to, form, next) => {
   if (store.getters.isLogin) {
     next()
@@ -22,6 +24,11 @@ router.beforeEach((to, form, next) => {
     }
   }
 })
+
+/*项目启动，获取行政区域缓存至 sessionStorage*/
+if (!store.getters.q_cityInfo) {
+  store.dispatch({type: 'getCityInfo'})
+}
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

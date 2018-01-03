@@ -88,7 +88,7 @@
           </el-form-item>
           <el-form-item label="选择角色：" prop="role" class="check-wrap">
             <el-radio-group v-model="updateFormData.role">
-              <el-radio :label="item" name="role" v-for="item in roleList">{{item.roleName}}</el-radio>
+              <el-radio :label="(item,index)" name="role" v-for="item in roleList" :key="index">{{item.roleName}}</el-radio>
             </el-radio-group>
           </el-form-item>
         </el-form>
@@ -289,7 +289,7 @@
           this.tableData.splice(index, 1)
           this.$message.success('删除成功')
         } else {
-          this.$message.success('删除失败')
+          this.$message.error('删除失败')
         }
       },
       goAdd(){

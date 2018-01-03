@@ -16,6 +16,7 @@ class Http {
     let data = await axios.post(resultUrl, params)
     if (data.data.code === code.NO_AUTHORITY) { // 无权限访问
       Message({message: '登录已失效，请重新登录', type: 'error'})
+      store.dispatch({type: 'logoutAction'})
       router.push({
         name: 'login'
       })
@@ -24,11 +25,14 @@ class Http {
     return data.data
   }
 
-  async formPost(url, params) {
+  async formPost(url, params, sessionId) {
     let headerOption = {
       headers: {
         'Content-Type': 'text/plain;charset=UTF-8'
       }
+    }
+    if (sessionId) {
+      url += ';' + sessionId
     }
     let resultUrl = Util.urlEncode(url, params)
     let data = await axios({

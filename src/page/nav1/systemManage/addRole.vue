@@ -91,7 +91,7 @@
               id: this.$route.params.id || null
             }).then(data => {
               if (data.code === code.SUCCESS) {
-                this.$message.success('添加成功')
+                this.$message.success(this.$route.params.id ? '修改成功' : '添加成功')
                 this.$router.back()
               } else {
                 this.$message.error(data.mesg)

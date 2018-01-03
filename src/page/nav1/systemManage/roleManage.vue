@@ -56,6 +56,7 @@
 <script>
   import qTable from '@/component/table.vue'
   import Api from '@/api/api'
+  import {code} from '@/config/config'
   export default{
     components: {
       qTable
@@ -81,14 +82,12 @@
           {
             label: '修改',
             color: '#20a7fe',
-            handle: this.editHanld,
+            handle: this.editHandler,
           },
           {
             label: '删除',
             color: '#ff3c3c',
-            handle(index, item){
-              console.log(index, item)
-            },
+            handle: this.deleteHandler,
           }
         ],
         selectOption: {
@@ -107,15 +106,33 @@
     },
     methods: {
       loadPage(currentPage){ // 点击分页器
-        console.log(currentPage)
+        this.selectOption.pageNum = currentPage
+        this.init()
       },
       goAdd(){
         this.$router.push({
           name: 'addRole'
         })
       },
-      deleteAll(val){
-        console.log(val)
+      async deleteAll(arr){
+        let result = []
+        let left = []
+        this.tableData.forEach(item => {
+          if (arr.indexOf(item) >= 0) {
+            result.push(item.id)
+          } else {
+            left.push(item)
+          }
+        })
+        let data = await Api.deleteRole({
+          ids: result
+        })
+        if (data.code === code.SUCCESS) {
+          this.$message.success('删除成功')
+          this.tableData = left
+        } else {
+          this.$message.error('删除失败')
+        }
       },
       async getAllRole(){
         let data = await Api.getAllRole(this.selectOption)
@@ -137,13 +154,24 @@
         let list = await this.getAllRole()
         this.tableData = list
       },
-      editHanld(index, item){
+      editHandler(index, item){
         this.$router.push({
           name: 'addRole',
           params: {
             id: item.id
           }
         })
+      },
+      async deleteHandler(index, item){
+        let data = await Api.deleteRole({
+          ids: [item.id]
+        })
+        if (data.code === code.SUCCESS) {
+          this.tableData.splice(index, 1)
+          this.$message.success('删除成功')
+        } else {
+          this.$message.error(data.mesg)
+        }
       }
     }
   }

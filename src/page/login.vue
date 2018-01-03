@@ -11,22 +11,22 @@
             <el-input
               placeholder="请输入账号或手机号"
               v-model="username">
-              <i slot="prefix" class="el-input__icon el-icon-search"></i>
+              <!--  <i slot="prefix" class="el-input__icon el-icon-search"></i>-->
             </el-input>
-            <span class="el-icon-circle-check icon"></span>
+            <!--  <span class="el-icon-circle-check icon"></span>-->
           </div>
           <div class="input-wrap">
             <el-input
               placeholder="请输入密码"
               v-model="password">
-              <i slot="prefix" class="el-input__icon el-icon-search"></i>
+              <!--  <i slot="prefix" class="el-input__icon el-icon-search"></i>-->
             </el-input>
-            <span class="el-icon-circle-check icon"></span>
+            <!--   <span class="el-icon-circle-check icon"></span>-->
           </div>
           <div class="code-wrap">
-            <input class="code-input" type="text" placeholder="请输入验证码"/>
-            <div class="code"></div>
-            <div class="change">看不清，换一张</div>
+            <input class="code-input" type="text" placeholder="请输入验证码" v-model="code"/>
+            <img class="code" :src="base64">
+            <div class="change" @click.stop="getCode">看不清，换一张</div>
           </div>
           <div class="btn-group">
             <div class="btn" @click="login">立即登录</div>
@@ -47,26 +47,32 @@
     data(){
       return {
         username: '',
-        password: ''
+        password: '',
+        code: '',
+        sessionId: '',
+        base64: ''
       }
     },
     computed: {
       ...mapGetters(['isLogin'])
     },
     created(){
-      /* if (this.isLogin) {
-       this.$router.push({
-       name: 'index'
-       })
-       }*/
+      if (this.isLogin) {
+        this.$router.push({
+          name: 'index'
+        })
+      }
+      this.getCode()
     },
     methods: {
       ...mapMutations(['saveUserInfo']),
       async login(){
+        if (!this.loginFormCheck()) return
         let data = await api.login({
           username: this.username,
-          password: this.password
-        })
+          password: this.password,
+          picCode: this.code
+        }, this.sessionId)
         if (data.code === code.SUCCESS) {
           if (this.$route.params.resolve) {
             this.$route.params.resolve(data.data)
@@ -77,7 +83,27 @@
               name: 'index'
             })
           }
+        } else {
+          this.$message.error(data.mesg)
         }
+      },
+      getCode(){
+        api.getValidateCode().then(data => {
+          this.sessionId = data.split(';')[1]
+          this.base64 = 'data:image/jpeg;base64,' + data.split(';')[0]
+        })
+      },
+      loginFormCheck(){
+        if (this.username == '') {
+          this.$message.error('请输入账号')
+        } else if (this.password == '') {
+          this.$message.error('请输入密码')
+        } else if (this.code == '') {
+          this.$message.error('请输入验证码')
+        } else {
+          return true
+        }
+        return false
       }
     }
   }
@@ -95,7 +121,7 @@
     .wrap {
       display: flex;
       align-items: center;
-      .logo{
+      .logo {
         margin-right: 122px;
       }
       .login-box {
@@ -176,7 +202,7 @@
               }
             }
           }
-          .forget{
+          .forget {
             margin-top: 20px;
             text-align: right;
             color: #249fda;

@@ -2,7 +2,8 @@
  * Created by gd on 2017/12/29/029.
  */
 import localStore from '@/service/localStorage/localStorage.service'
-import cookies from '@/service/cookies'
+import sessonStore from '@/service/localStorage/sessionStorage.service'
+
 let saveUserInfo = function (state, userInfo) {
   state.sysAuthUrls = userInfo.sysAuthUrls
   state.sysUserBg = userInfo.sysUserBg
@@ -19,7 +20,13 @@ let clearUserInfo = function (state) {
   localStorage['sysUserBg'] = null
   localStorage['JSESSIONID'] = null
 }
+
+let saveCityInfo = function (state, cityInfo) {
+  state.q_cityInfo = cityInfo
+  sessonStore.set('q_cityInfo', cityInfo)
+}
 export default {
   saveUserInfo,
-  clearUserInfo
+  clearUserInfo,
+  saveCityInfo
 }

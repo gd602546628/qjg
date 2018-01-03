@@ -7,13 +7,20 @@ const JSON = window.JSON
 
 export default {
   get (name) {
-    let value = localStorage.getItem(name)
-    if (/^\{.*\}$/.test(value)) value = JSON.parse(value)
+    let value = null
+    try {
+      value = JSON.parse(localStorage[name])
+    } catch (e) {
+      value = localStorage[name]
+    }
     return value
   },
   set (name, value) {
-    if (typeof value === typeof {}) value = JSON.stringify(value)
-    return localStorage.setItem(name, value)
+    try {
+      localStorage[name] = JSON.stringify(value)
+    } catch (e) {
+      localStorage[name] = value
+    }
   },
   remove (name) {
     return localStorage.removeItem(name)

@@ -20,7 +20,7 @@
         <el-form :model="formData2" :rules="rules2" ref="form2">
           <el-form-item label="选择角色：" prop="role" class="check-wrap">
             <el-radio-group v-model="formData2.role">
-              <el-radio :label="item" name="role" v-for="item in roleList">{{item.roleName}}</el-radio>
+              <el-radio :label="item" name="role" v-for="(item,index) in roleList" :key="index">{{item.roleName}}</el-radio>
             </el-radio-group>
           </el-form-item>
         </el-form>

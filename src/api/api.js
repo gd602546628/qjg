@@ -8,8 +8,8 @@ class Api {
   }
 
   /*登录*/
-  async login(params = {}) {
-    let data = await httpService.formPost(config.loginUrl, params)
+  async login(params = {}, sessionId) {
+    let data = await httpService.formPost(config.loginUrl, params, sessionId)
     return data
   }
 
@@ -70,6 +70,47 @@ class Api {
 // 删除用户
   async deleteUser(params = {}) {
     let data = await httpService.post(config.deleteUser, params)
+    return data
+  }
+
+// 删除角色
+  async deleteRole(params = {}) {
+    let data = await httpService.post(config.deleteRole, params)
+    return data
+  }
+
+  // 获取验证码
+  async getValidateCode(params = {}) {
+    let data = await httpService.post(config.getValidateCode, params)
+    return data
+  }
+
+  // 项目列表
+  async getObjectList(params = {}) {
+    let data = await httpService.post(config.getObjectList, params)
+    return data
+  }
+
+  // 删除项目
+  async deleteObject(params = {}) {
+    let data = await httpService.post(config.deleteObject, params)
+    return data
+  }
+  // 更新项目
+  async updateObject(params = {}) {
+    let data = await httpService.post(config.updateObject, params)
+    return data
+  }
+
+  // 获取所有行政区域
+  async getAllArea(params = {}) {
+    let data = await httpService.post(config.getAllArea, params)
+    return data
+  }
+
+  // 获取区域列表
+  async getAreaList(params = {}) {
+    let data = await httpService.post(config.getAreaList, params)
     return data
   }
 }

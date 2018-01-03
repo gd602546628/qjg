@@ -9,19 +9,20 @@
         active-text-color="#ffffff"
       >
         <el-menu-item index="advertiseManageIndex" v-if="sysAuth.advert">
-          <!--    <i class="el-icon-menu"></i>-->
+              <i class="icon-gg title-icon"></i>
           <span slot="title">广告管理</span>
         </el-menu-item>
         <el-menu-item index="areaManageIndex" v-if="sysAuth.sourceArea">
-          <!-- <i class="el-icon-menu"></i>-->
+           <i class="icon-qygl title-icon"></i>
           <span slot="title">区域管理</span>
         </el-menu-item>
         <el-menu-item index="projectManageIndex" v-if="sysAuth.sourceObject">
-          <!--<i class="el-icon-setting"></i>-->
+          <i class="icon-xm title-icon"></i>
           <span slot="title">项目管理</span>
         </el-menu-item>
         <el-submenu index="systemManageIndex" v-if="sysAuth.system">
           <template slot="title">
+            <i class="icon-select title-icon"></i>
             <span>系统设置</span>
           </template>
           <el-menu-item-group>
@@ -78,7 +79,7 @@
             target: 'systemCate'
           },
           {
-            url: '/sourceObject',
+            url: '/source',
             target: 'sourceObject'
           },
           {
@@ -125,6 +126,10 @@
         background-repeat: no-repeat;
         background-position: center;
         background-size: cover;
+        .title-icon{
+          margin-right: 20px;
+          font-size: 24px;
+        }
         .el-menu {
           background: none;
         }
