@@ -25,10 +25,6 @@ router.beforeEach((to, form, next) => {
   }
 })
 
-/*项目启动，获取行政区域缓存至 sessionStorage*/
-if (!store.getters.q_cityInfo) {
-  store.dispatch({type: 'getCityInfo'})
-}
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

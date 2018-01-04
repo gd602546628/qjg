@@ -3,7 +3,7 @@
     <!--<div class="page-title">项目管理</div>-->
     <common-box title="项目管理" :showBack="true">
       <div class="project-image">
-        <div class="item-wrap" v-for="item in new Array(20)">
+        <div class="item-wrap" v-for="item in new Array(1)">
           <div class="item">
             <div class="label">次卧</div>
             <div class="hover">
@@ -18,22 +18,180 @@
             </div>
           </div>
         </div>
+        <div class="item-wrap" @click.stop="openAddModel">
+          <div class="item-upload">
+            <p class="el-icon-plus icon"></p>
+          </div>
+        </div>
       </div>
     </common-box>
+
+    <common-model title="添加全景图" :show="showAddModel" @closeModel="closeModel" class="add-model">
+      <el-form class="add-image-form" :model="addImgData" :rules="rules" ref="uploadForm" label-width="100px">
+
+        <el-form-item label="名称：" prop="name">
+          <el-input v-model="addImgData.name" placeholder="请填写图片名称">
+
+          </el-input>
+        </el-form-item>
+
+        <el-form-item label="描述：" prop="content">
+          <el-input v-model="addImgData.content" placeholder="请填写图片描述">
+          </el-input>
+        </el-form-item>
+
+        <el-form-item label="背景音乐：" class="upload-form-item">
+          <div class="upload-box">
+            <el-upload
+              class="avatar-uploader"
+              :action="source_Upload_sound"
+              :show-file-list="false"
+              :on-success="bgmUploadSuccess"
+              :before-upload="beforeBgmUpload"
+            >
+              <span class="el-icon-plus avatar-uploader-icon"></span>
+            </el-upload>
+          </div>
+        </el-form-item>
+
+        <el-form-item label="项目图片：" prop="url" class="upload-form-item">
+          <div class="upload-box">
+            <el-upload
+              class="avatar-uploader"
+              :action="source_Upload"
+              :show-file-list="false"
+              :on-success="imgUploadSuccess"
+              :before-upload="beforeImgUpload"
+            >
+              <img v-if="addImgData.url" :src="addImgData.url" class="avatar">
+              <span v-if="!addImgData.url" class="el-icon-plus avatar-uploader-icon"></span>
+            </el-upload>
+          </div>
+        </el-form-item>
+
+      </el-form>
+      <div class="btn-group">
+        <div class="q-btn-confirm" @click.stip="uploadImgConfirm">确定</div>
+        <div class="q-btn-cancel" @click="closeModel()">取消</div>
+      </div>
+    </common-model>
   </div>
 </template>
 
 
 <script>
   import commonBox from '@/component/commonBox.vue'
+  import Api from '@/api/api'
+  import commonModel from '@/component/commonModel.vue'
+  import{mapGetters} from 'vuex'
+  import {filePre, code} from '@/config/config'
   export default{
+    data(){
+      return {
+        imageUrl: '',
+        showAddModel: false,
+        imgList: [],
+        currentObject: null,
+        addImgData: {
+          bgsnd: '',
+          content: '',
+          name: '',
+          url: ''
+        },
+        rules: {
+          content: [{required: true, message: '请输入描述', trigger: 'blur'}],
+          name: [{required: true, message: '请输入名称', trigger: 'blur'}],
+          url: [{required: true, message: '请上传图片', trigger: 'blur'}]
+        }
+      }
+    },
+    computed: {
+      ...mapGetters(['source_Upload', 'source_Upload_sound'])
+    },
     components: {
-      commonBox
+      commonBox,
+      commonModel
+    },
+    created(){
+      this.init()
+    },
+    methods: {
+      bgmUploadSuccess(data){
+        console.log(data)
+        this.addImgData.bgsnd = data.data
+      },
+      imgUploadSuccess(data){
+        console.log(data)
+        console.log(filePre + data.data)
+        this.addImgData.url = filePre + data.data
+      },
+      openAddModel(){
+        this.showAddModel = true
+        this.addImgData = {
+          bgsnd: '',
+          content: '',
+          name: '',
+          url: ''
+        }
+      },
+      async getImgList(){
+        let data = await Api.source.getList({
+          objectId: this.$route.params.id
+        })
+        this.imgList = data.data
+      },
+      async getObject(){
+        let data = await Api.sourceObject.getById({
+          id: this.$route.params.id
+        })
+        this.currentObject = data.data
+      },
+      init(){
+        this.getImgList()
+        this.getObject()
+      },
+      closeModel(){
+        this.showAddModel = false
+      },
+      uploadImgConfirm(){
+        this.$refs.uploadForm.validate(async validate => {
+          if (validate) {
+            let data = await Api.source.add({
+              bgsnd: this.addImgData.bgsnd,
+              content: this.addImgData.content,
+              name: this.addImgData.name,
+              url: this.addImgData.url,
+              objectId: this.$route.params.id
+            })
+            if (data.code === code.SUCCESS) {
+              this.$message.success('添加成功')
+            } else {
+              this.$message.error(data.error)
+            }
+          }
+        })
+      },
+      beforeBgmUpload(data){
+        let test = /.mp3$/g
+        let flag = test.test(data.name)
+        if (!flag) {
+          this.$message.error('只能上传mp3格式')
+        }
+        return flag
+      },
+      beforeImgUpload(data){
+        let test = /.[jepg|png|jpg]$/g
+        let flag = test.test(data.name)
+        if (!flag) {
+          this.$message.error('只能上传jepg,jpg,png格式')
+        }
+        return flag
+      }
     }
   }
 </script>
 
-<style lang='scss' rel='stylesheet/scss' scoped>
+<style lang='scss' rel='stylesheet/scss'>
   .lookProject {
     padding: 20px;
     .page-title {
@@ -47,6 +205,8 @@
         width: 25%;
         text-align: center;
         margin-top: 10px;
+        vertical-align: top;
+        overflow: hidden;
         .item {
           width: 96%;
           padding-bottom: 64%;
@@ -97,7 +257,7 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                span{
+                span {
                   color: #ffffff;
                   font-size: 30px;
                 }
@@ -109,7 +269,94 @@
             }
           }
         }
+        .item-upload {
+          width: 96%;
+          padding-bottom: 64%;
+          cursor: pointer;
+          border: 1px dashed #d9d9d9;
+          position: relative;
+          &:hover {
+            border: 1px dashed #20a7fe;
+          }
+          .icon {
+            color: #8c939d;
+            width: 30px;
+            height: 30px;
+            font-size: 30px;
+            position: absolute;
+            left: 50%;
+            top: 40%;
+            margin-left: -15px;
+
+          }
+        }
       }
+    }
+
+    .add-model {
+      .btn-group {
+        display: flex;
+        justify-content: center;
+        border-top: 1px solid #d9d9d9;
+        padding-top: 30px;
+      }
+      .add-image-form {
+        width: 70%;
+        margin: 0 auto;
+        .el-form-item {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          margin-top: 20px;
+          .el-form-item__content {
+            flex: 1;
+            margin-left: 0 !important;
+          }
+        }
+        .upload-form-item {
+          justify-content: flex-start;
+          .upload-box {
+            .pro-image {
+              font-size: 14px;
+              color: #606266;
+              margin-right: 12px;
+            }
+            .avatar-uploader {
+              width: 178px;
+              height: 178px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              .avatar {
+                width: 100%;
+                height: 100%;
+              }
+              .el-upload {
+                border: 1px dashed #d9d9d9;
+                border-radius: 6px;
+                cursor: pointer;
+                position: relative;
+                overflow: hidden;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              }
+              .el-upload:hover {
+                border-color: #409EFF;
+              }
+              .avatar-uploader-icon {
+                font-size: 28px;
+                color: #8c939d;
+                width: 178px;
+                height: 178px;
+                line-height: 178px;
+                text-align: center;
+              }
+            }
+          }
+        }
+      }
+
     }
   }
 </style>

@@ -38,8 +38,8 @@
     background: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
+    align-items: center;
     .wrap{
-      margin-top: 288px;
       .box {
         min-width: 620px;
         background: #ffffff;

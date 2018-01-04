@@ -39,9 +39,9 @@
   </div>
 </template>
 <script>
-  import api from '@/api/api'
+  import Api from '@/api/api'
   import {code} from '@/config/config'
-  import {mapGetters, mapMutations} from 'vuex'
+  import {mapGetters, mapMutations, mapActions} from 'vuex'
   import httpService from '@/service/httpService'
   export default{
     data(){
@@ -66,9 +66,10 @@
     },
     methods: {
       ...mapMutations(['saveUserInfo']),
+      ...mapActions(['getCityInfo']),
       async login(){
         if (!this.loginFormCheck()) return
-        let data = await api.login({
+        let data = await Api.login.login({
           username: this.username,
           password: this.password,
           picCode: this.code
@@ -79,6 +80,7 @@
             this.$route.params.fn()
           } else {
             this.saveUserInfo(data.data)
+            this.getCityInfo()
             this.$router.push({
               name: 'index'
             })
@@ -88,7 +90,7 @@
         }
       },
       getCode(){
-        api.getValidateCode().then(data => {
+        Api.login.getValidateCode().then(data => {
           this.sessionId = data.split(';')[1]
           this.base64 = 'data:image/jpeg;base64,' + data.split(';')[0]
         })

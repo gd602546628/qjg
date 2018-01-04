@@ -41,20 +41,13 @@
               ></el-input>
             </div>
             <div style="margin-left: 20px">
-              <!--TODO  分类-->
               <span>项目分类：</span>
-              <el-select placeholder="请选择项目分类" v-model="selectOption.status">
+              <el-select placeholder="请选择项目分类" v-model="selectOption.cateId">
                 <el-option
-                  label="全部"
-                  :value="null">
-                </el-option>
-                <el-option
-                  label="启用"
-                  :value="0">
-                </el-option>
-                <el-option
-                  label="停用"
-                  :value="1">
+                  :label="item.name"
+                  :value="item.id"
+                  v-for="item in cateList"
+                >
                 </el-option>
               </el-select>
             </div>
@@ -101,7 +94,7 @@
       </div>
     </div>
     <common-model title="添加项目" :show="showModel" @closeModel="closeModel" class="model-form">
-      <el-form class="form" :model="formData" :rules="rules">
+      <el-form class="form" :model="formData" :rules="rules" ref="addForm">
 
         <el-form-item label="项目名称：" prop="name">
           <el-input v-model="formData.name" placeholder="请输入项目名称"></el-input>
@@ -109,27 +102,47 @@
 
         <el-form-item label="项目分类：" prop="category">
           <el-select v-model="formData.category" placeholder="请选择项目分类">
-            <el-option label="分类一" value="shanghai"></el-option>
-            <el-option label="分类二" value="beijing"></el-option>
+            <el-option :label="item.name" :value="item" v-for="item in cateList"></el-option>
           </el-select>
         </el-form-item>
 
-        <div class="upload-box">
-          <p class="pro-image">项目图片：</p>
-          <el-upload
-            class="avatar-uploader"
-            :action="uploadUrl"
-            :show-file-list="false"
-            :on-success="handleAvatarSuccess"
-          >
-            <img v-if="imageUrl" :src="imageUrl" class="avatar">
-            <span v-if="!imageUrl" class="el-icon-plus avatar-uploader-icon"></span>
-          </el-upload>
-        </div>
+        <el-form-item label="项目图片：" prop="imageUrl">
+          <div class="upload-box">
+            <!--  <p class="pro-image">项目图片：</p>-->
+            <el-upload
+              class="avatar-uploader"
+              :action="pro_uploadImage"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccess"
+            >
+              <img v-if="formData.imageUrl" :src="formData.imageUrl" class="avatar">
+              <span v-if="!formData.imageUrl" class="el-icon-plus avatar-uploader-icon"></span>
+            </el-upload>
+          </div>
+        </el-form-item>
 
       </el-form>
       <div class="btn-group">
-        <div class="q-btn-confirm">确定</div>
+        <div class="q-btn-confirm" @click.stip="addProjectConfirm">确定</div>
+        <div class="q-btn-cancel" @click="closeModel()">取消</div>
+      </div>
+    </common-model>
+
+    <common-model title="修改项目" :show="showModifyModel" @closeModel="closeModel" class="model-form">
+      <el-form class="form" :model="formData" :rules="rules" ref="modifyForm">
+
+        <el-form-item label="项目名称：" prop="name">
+          <el-input v-model="formData.name" :placeholder="currentPro.name"></el-input>
+        </el-form-item>
+
+        <el-form-item label="项目分类：" prop="category">
+          <el-select v-model="formData.category" :placeholder="currentPro.cateName">
+            <el-option :label="item.name" :value="item" v-for="item in cateList"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div class="btn-group">
+        <div class="q-btn-confirm" @click.stip="modifyProjectConfirm">确定</div>
         <div class="q-btn-cancel" @click="closeModel()">取消</div>
       </div>
     </common-model>
@@ -140,7 +153,7 @@
   import commonModel from '@/component/commonModel.vue'
   import Api from '@/api/api'
   import {mapGetters} from 'vuex'
-  import {config, filePre} from '@/config/config'
+  import {filePre, code} from '@/config/config'
   export default{
     components: {
       qTable,
@@ -171,6 +184,7 @@
         startTime: '',
         endTime: '',
         showModel: false,
+        showModifyModel: false,
         tableHeader: [
           {
             label: '项目名称',
@@ -178,7 +192,7 @@
           },
           {
             label: '全景图片',
-            prop: 'img'
+            prop: 'sourceNum'
           },
           {
             label: '创建时间',
@@ -205,23 +219,25 @@
         ],
         formData: {
           name: '',
-          category: ''
+          category: '',
+          imageUrl: ''
         },
         rules: {
           name: [{required: true, message: '请输入姓名', trigger: 'blur'},
             {min: 1, max: 20, message: '名称为1-20位汉子、字母、数字、特殊字符', trigger: 'blur'}],
-          category: [{required: true, message: '请选择一个分类', trigger: 'change'}]
+          category: [{required: true, message: '请选择一个分类', trigger: 'change'}],
+          imageUrl: [{required: true, message: '请上传图片', trigger: 'change'}]
         },
         areaList: [],
         defaultAreaSelect: [], // 默认行政区域选择
         currentAreaIndex: -1, // 选择的区域索引
-        imageUrl: '',
-        uploadUrl: ''
+        cateList: [],
+        addFlag: false, //标记是否正在添加，防止重复添加
+        currentPro: {} // 当前操作的项目obj
       }
     },
     async created(){
-      this.uploadUrl = this.pro_uploadImage
-      console.log(this.uploadUrl)
+      this.getCateList()
       this.defaultAreaSelect = [this.q_cityInfo[0].id,
         this.q_cityInfo[0].nextArea[0].id,
         this.q_cityInfo[0].nextArea[0].nextArea[0].id
@@ -232,20 +248,44 @@
       this.getObjectList()
     },
     methods: {
+      async getCateList(){
+        let data = await Api.cate.getList()
+        this.cateList = data.data
+      },
       look(index, item){
         this.$router.push({
-          name: 'lookProject'
+          name: 'lookProject',
+          params: {
+            id: item.id
+          }
         })
       },
       edit(index, item){
+        this.currentPro = item
+        this.showModifyModel = true
       },
-      delete(index, item){
+      async delete(index, item){
+        let data = await Api.sourceObject.deleteById({
+          id: item.id
+        })
+        if (data.code === code.SUCCESS) {
+          this.$message.success('删除成功')
+          this.tableData.splice(index, 1)
+        } else {
+          this.$message.error(data.mesg)
+        }
       },
       addProject(){ // 添加项目
         this.showModel = true
       },
       closeModel(){
         this.showModel = false
+        this.showModifyModel = false
+        this.formData = {
+          name: '',
+          category: '',
+          imageUrl: ''
+        }
       },
       loadPage(currentPage){
         this.selectOption.pageNum = currentPage
@@ -256,7 +296,7 @@
         this.getObjectList()
       },
       async getObjectList(){
-        let data = await Api.getObjectList(this.selectOption)
+        let data = await Api.sourceObject.getList(this.selectOption)
         data = data.data
         this.total = data.allCount
         this.pageCount = data.totalPage
@@ -271,7 +311,7 @@
       },
       async getAreaList(arr){
         this.currentAreaIndex = -1
-        let data = await Api.getAreaList({
+        let data = await Api.area.getList({
           provinceCode: arr[0],
           cityCode: arr[1],
           countyCode: arr[2]
@@ -293,7 +333,60 @@
         this.getObjectList()
       },
       handleAvatarSuccess(e){// 上传成功处理
-        this.imageUrl = filePre + e.data
+        if (e.code == code.SUCCESS) {
+          this.formData.imageUrl = filePre + e.data
+        } else {
+          this.$message.error(e.mesg)
+        }
+      },
+      addProjectConfirm(){
+        if (this.addFlag) return
+        this.addFlag = true
+        this.$refs.addForm.validate(async (validate) => {
+          if (validate) {
+            let data = await Api.sourceObject.add({
+              areaId: this.selectOption.areaId,
+              cateId: this.formData.category.id,
+              cateName: this.formData.category.name,
+              image: this.formData.imageUrl.split(filePre)[1],
+              name: this.formData.name
+            })
+            if (data.code === code.SUCCESS) {
+              this.$message.success('添加成功')
+              let obj = data.data
+              obj.sourceNum = 0
+              obj.operation = this.operation
+              this.tableData.unshift(obj)
+              this.closeModel()
+            } else {
+              this.$message.error(data.mesg)
+            }
+            this.addFlag = false
+          } else {
+            this.addFlag = false
+          }
+        })
+      },
+      modifyProjectConfirm(){
+        this.$refs.modifyForm.validate(async (validate) => {
+          if (validate) {
+            let data = await Api.sourceObject.update({
+              id: this.currentPro.id,
+              areaId: this.selectOption.areaId,
+              cateId: this.formData.category.id,
+              cateName: this.formData.category.name,
+              name: this.formData.name
+            })
+            if (data.code === code.SUCCESS) {
+              this.$message.success('修改成功')
+              this.currentPro.name = this.formData.name
+              this.currentPro.cateName = this.formData.category.name
+              this.closeModel()
+            } else {
+              this.$message.error(data.mesg)
+            }
+          }
+        })
       }
     }
   }

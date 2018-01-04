@@ -70,7 +70,7 @@ export default new Router({
               name: 'projectManageIndex'
             },
             {
-              path: 'lookProject',
+              path: 'lookProject/:id',
               component: lookProject,
               name: 'lookProject'
             },

@@ -20,7 +20,8 @@
         <el-form :model="formData2" :rules="rules2" ref="form2">
           <el-form-item label="选择角色：" prop="role" class="check-wrap">
             <el-radio-group v-model="formData2.role">
-              <el-radio :label="item" name="role" v-for="(item,index) in roleList" :key="index">{{item.roleName}}</el-radio>
+              <el-radio :label="item" name="role" v-for="(item,index) in roleList" :key="item.id">{{item.roleName}}
+              </el-radio>
             </el-radio-group>
           </el-form-item>
         </el-form>
@@ -84,7 +85,7 @@
         })
       },
       async getRoleList(){
-        let data = await Api.getAllRole()
+        let data = await Api.systemRole.getAllRole()
         this.roleList = data.data.list
       },
       async addUser(){
@@ -95,7 +96,7 @@
           roleId: this.formData2.role.id,
           roleName: this.formData2.role.roleName
         }
-        let data = await Api.addUser(params)
+        let data = await Api.systemUser.add(params)
         if (data && data.code == code.SUCCESS) {
           this.$router.back()
         } else {

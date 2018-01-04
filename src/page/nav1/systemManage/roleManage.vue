@@ -124,7 +124,7 @@
             left.push(item)
           }
         })
-        let data = await Api.deleteRole({
+        let data = await Api.systemRole.deleteRole({
           ids: result
         })
         if (data.code === code.SUCCESS) {
@@ -135,7 +135,7 @@
         }
       },
       async getAllRole(){
-        let data = await Api.getAllRole(this.selectOption)
+        let data = await Api.systemRole.getAllRole(this.selectOption)
         data = data.data
         this.total = data.allCount
         this.pageCount = data.totalPage
@@ -163,7 +163,7 @@
         })
       },
       async deleteHandler(index, item){
-        let data = await Api.deleteRole({
+        let data = await Api.systemRole.deleteRole({
           ids: [item.id]
         })
         if (data.code === code.SUCCESS) {

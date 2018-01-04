@@ -7,5 +7,5 @@ export default {
   JSESSIONID: localStorage.getStorage('JSESSIONID'),
   sysAuthUrls: localStorage.getStorage('sysAuthUrls'),
   sysUserBg: localStorage.getStorage('sysUserBg'),
-  q_cityInfo: sessonStore.get('q_cityInfo') || null
+  q_cityInfo: localStorage.getStorage('q_cityInfo') || null
 }

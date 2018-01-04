@@ -7,6 +7,7 @@ import Api from '@/api/api'
 let loginAction = async function ({commit, state}, {routeName, params}) {
   let userInfo = await login()
   commit('saveUserInfo', userInfo)
+  getCityInfo({commit, state})
   if (routeName) {
     Router.push({
       name: routeName,
@@ -30,7 +31,7 @@ let login = function () {
   })
 }
 let getCityInfo = async function ({commit, state}) {
-  let data = await Api.getAllArea()
+  let data = await Api.area.areaCode()
   let step = function (item) {
     item.label = item.name
     item.value = item.id
@@ -43,8 +44,8 @@ let getCityInfo = async function ({commit, state}) {
   }
   let cityInfo = data.data
   /*cityInfo.forEach(city => {
-    step(city)
-  })*/
+   step(city)
+   })*/
   commit('saveCityInfo', cityInfo)
 }
 export default {

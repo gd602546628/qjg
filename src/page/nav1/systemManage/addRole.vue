@@ -69,7 +69,7 @@
       }
     },
     created(){
-      Api.getUrls().then(data => {
+      Api.systemRole.getUrls().then(data => {
         this.urlData = data.data
         this.dataFormat(this.urlData)
       })
@@ -85,7 +85,7 @@
             this.formData.type.forEach(item => {
               ids.push(item.id)
             })
-            Api.addOrUpdateRole({
+            Api.systemRole.addOrUpdateRole({
               roleName: this.formData.name,
               urls: ids,
               id: this.$route.params.id || null

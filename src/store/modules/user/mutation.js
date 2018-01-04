@@ -23,7 +23,7 @@ let clearUserInfo = function (state) {
 
 let saveCityInfo = function (state, cityInfo) {
   state.q_cityInfo = cityInfo
-  sessonStore.set('q_cityInfo', cityInfo)
+  localStore.setStorage('q_cityInfo', cityInfo)
 }
 export default {
   saveUserInfo,

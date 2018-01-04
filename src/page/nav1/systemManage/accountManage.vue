@@ -88,7 +88,8 @@
           </el-form-item>
           <el-form-item label="选择角色：" prop="role" class="check-wrap">
             <el-radio-group v-model="updateFormData.role">
-              <el-radio :label="(item,index)" name="role" v-for="item in roleList" :key="index">{{item.roleName}}</el-radio>
+              <el-radio :label="item" name="role" v-for="item in roleList" :key="item.id">{{item.roleName}}
+              </el-radio>
             </el-radio-group>
           </el-form-item>
         </el-form>
@@ -241,7 +242,7 @@
     },
     methods: {
       async getRoleList(){
-        let data = await Api.getAllRole()
+        let data = await Api.systemRole.getAllRole()
         this.roleList = data.data.list
       },
       loadPage(currentPage){ // 点击分页器
@@ -258,7 +259,7 @@
         })
       },
       async stop(index, item){
-        let data = await Api.updateStatus({
+        let data = await Api.systemUser.updateStatus({
           id: item.id,
           status: 1
         })
@@ -268,7 +269,7 @@
         }
       },
       async start(index, item){
-        let data = await Api.updateStatus({
+        let data = await Api.systemUser.updateStatus({
           id: item.id,
           status: 0
         })
@@ -282,7 +283,7 @@
         this.currentUser = item
       },
       async delete(index, item){
-        let data = await Api.deleteUser({
+        let data = await Api.systemUser.deleteById({
           ids: [item.id]
         })
         if (data.code === code.SUCCESS) {
@@ -302,7 +303,7 @@
         this.init()
       },
       async getUserList(){
-        let data = await Api.getUserList(this.selectOption)
+        let data = await Api.systemUser.getList(this.selectOption)
         data = data.data
         this.total = data.allCount
         this.pageCount = data.totalPage
@@ -327,7 +328,7 @@
       },
       async updateUser(){
         console.log(this.updateFormData)
-        let data = await Api.updateUser({
+        let data = await Api.systemUser.update({
           id: this.currentUser.id,
           name: this.updateFormData.name,
           roleId: this.updateFormData.role.id,
@@ -343,7 +344,7 @@
         }
       },
       async updateUserPassword(){
-        let data = await Api.updateUserPassword({
+        let data = await Api.systemUser.updatePassword({
           id: this.currentUser.id,
           newPassword: this.resetPassWordFormData.password
         })
@@ -364,7 +365,7 @@
             left.push(item)
           }
         })
-        let data = await Api.deleteUser({
+        let data = await Api.systemUser.deleteById({
           ids: result
         })
         if (data.code === code.SUCCESS) {

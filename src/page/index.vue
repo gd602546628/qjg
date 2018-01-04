@@ -34,7 +34,7 @@
     methods: {
       ...mapActions(['logoutAction']),
       logout(){
-        Api.logout()
+        Api.login.logout()
         this.logoutAction()
         this.$router.push({
           name: 'login'
