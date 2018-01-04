@@ -6,7 +6,8 @@ import httpService from '@/service/httpService'
 import {urlPre} from '@/config/config'
 let url = {
   getList: `${urlPre}source/getList`,
-  add: `${urlPre}source/add`
+  add: `${urlPre}source/add`,
+  deleteById:`${urlPre}source/deleteById`,
 }
 let source = {
   getList: async function (params = {}) {
@@ -15,6 +16,10 @@ let source = {
   },
   add: async function (params = {}) {
     let data = await httpService.post(url.add, params)
+    return data
+  },
+  deleteById: async function (params = {}) {
+    let data = await httpService.post(url.deleteById, params)
     return data
   },
 }

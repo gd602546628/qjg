@@ -1,17 +1,17 @@
 <template>
-  <div class="lookProject">
-    <!--<div class="page-title">项目管理</div>-->
+  <!--<div class="lookProject">
+    &lt;!&ndash;<div class="page-title">项目管理</div>&ndash;&gt;
     <common-box title="项目管理" :showBack="true">
       <div class="project-image">
-        <div class="item-wrap" v-for="item in new Array(1)">
+        <div class="item-wrap" v-for="(item,index) in imgList" :key="item.id">
           <div class="item">
-            <div class="label">次卧</div>
+            <div class="label">{{item.name}}</div>
             <div class="hover">
               <div class="hover-wrap">
-                <div class="edit">
+                <div class="edit" @click.stop="edit(item)">
                   <span class="el-icon-edit"></span>
                 </div>
-                <div class="delete">
+                <div class="delete" @click.stop="deleteItem(item,index)">
                   <span class="el-icon-delete"></span>
                 </div>
               </div>
@@ -25,7 +25,6 @@
         </div>
       </div>
     </common-box>
-
     <common-model title="添加全景图" :show="showAddModel" @closeModel="closeModel" class="add-model">
       <el-form class="add-image-form" :model="addImgData" :rules="rules" ref="uploadForm" label-width="100px">
 
@@ -75,7 +74,8 @@
         <div class="q-btn-cancel" @click="closeModel()">取消</div>
       </div>
     </common-model>
-  </div>
+  </div>-->
+  <panoramas></panoramas>
 </template>
 
 
@@ -85,6 +85,7 @@
   import commonModel from '@/component/commonModel.vue'
   import{mapGetters} from 'vuex'
   import {filePre, code} from '@/config/config'
+  import panoramas from '@/component/panoramas.vue'
   export default{
     data(){
       return {
@@ -110,19 +111,17 @@
     },
     components: {
       commonBox,
-      commonModel
+      commonModel,
+      panoramas
     },
     created(){
       this.init()
     },
     methods: {
       bgmUploadSuccess(data){
-        console.log(data)
         this.addImgData.bgsnd = data.data
       },
       imgUploadSuccess(data){
-        console.log(data)
-        console.log(filePre + data.data)
         this.addImgData.url = filePre + data.data
       },
       openAddModel(){
@@ -165,6 +164,8 @@
             })
             if (data.code === code.SUCCESS) {
               this.$message.success('添加成功')
+              this.closeModel()
+              this.imgList.push(data.data)
             } else {
               this.$message.error(data.error)
             }
@@ -186,6 +187,20 @@
           this.$message.error('只能上传jepg,jpg,png格式')
         }
         return flag
+      },
+      edit(item){
+        console.log('edit')
+      },
+      async deleteItem(item, index){
+        let data = await Api.source.deleteById({
+          id: item.id
+        })
+        if (data.code === code.SUCCESS) {
+          this.$message.success('删除成功')
+          this.imgList.splice(index, 1)
+        } else {
+          this.$message.error(data.mesg)
+        }
       }
     }
   }

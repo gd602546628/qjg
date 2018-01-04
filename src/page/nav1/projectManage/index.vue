@@ -22,6 +22,7 @@
             <li v-for="(item,index) in areaList"
                 :class="{active:currentAreaIndex==index}"
                 @click="areaSelectClick(item,index)"
+                :key="index"
             >{{item.name}}
             </li>
           </ul>
@@ -47,6 +48,7 @@
                   :label="item.name"
                   :value="item.id"
                   v-for="item in cateList"
+                  :key="item.name"
                 >
                 </el-option>
               </el-select>
@@ -102,7 +104,7 @@
 
         <el-form-item label="项目分类：" prop="category">
           <el-select v-model="formData.category" placeholder="请选择项目分类">
-            <el-option :label="item.name" :value="item" v-for="item in cateList"></el-option>
+            <el-option :label="item.name" :value="item" v-for="item in cateList" :key="item.id"></el-option>
           </el-select>
         </el-form-item>
 
@@ -137,7 +139,7 @@
 
         <el-form-item label="项目分类：" prop="category">
           <el-select v-model="formData.category" :placeholder="currentPro.cateName">
-            <el-option :label="item.name" :value="item" v-for="item in cateList"></el-option>
+            <el-option :label="item.name" :value="item" v-for="item in cateList" :key="item.id"></el-option>
           </el-select>
         </el-form-item>
       </el-form>
