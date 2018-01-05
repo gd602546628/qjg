@@ -12,6 +12,9 @@ export default {
   pro_uploadImage: state => uploadUrl.objectMultipartUploadImg + ';JSESSIONID=' + state.JSESSIONID,
   source_Upload: state => uploadUrl.multipartUploadSource + ';JSESSIONID=' + state.JSESSIONID,
   source_Upload_sound: state => uploadUrl.multipartUploadSound + ';JSESSIONID=' + state.JSESSIONID,
+  source_Upload_icon: state => uploadUrl.multipartUploadIcon + ';JSESSIONID=' + state.JSESSIONID,
+  source_Upload_video: state => uploadUrl.multipartUploadVideo + ';JSESSIONID=' + state.JSESSIONID,
+  source_Upload_img: state => uploadUrl.multipartUploadImg + ';JSESSIONID=' + state.JSESSIONID,
 }
 
 
