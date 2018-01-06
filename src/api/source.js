@@ -11,6 +11,7 @@ let url = {
   hotGetList: `${urlPre}source/hotspot/getList`,
   iconGetList: `${urlPre}source/icon/getList`,
   hotAdd: `${urlPre}source/hotspot/add`,
+  hotDelete: `${urlPre}source/hotspot/deleteById`,
 }
 let source = {
   getList: async function (params = {}) {
@@ -35,6 +36,10 @@ let source = {
   },
   hotAdd: async function (params = {}) {
     let data = await httpService.post(url.hotAdd, params)
+    return data
+  },
+  hotDelete: async function (params = {}) {
+    let data = await httpService.post(url.hotDelete, params)
     return data
   },
 }

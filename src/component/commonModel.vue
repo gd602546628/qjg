@@ -1,15 +1,18 @@
 <template>
-  <div class="common-model" v-if="show">
-    <div class="wrap">
-      <div class="box">
-        <div class="header">
-          <p>{{title}}</p>
-          <span class="el-icon-close" @click.stop="close"></span>
+  <transition name="drawDown">
+    <div class="common-model" v-if="show">
+      <div class="wrap">
+        <div class="box">
+          <div class="header">
+            <p>{{title}}</p>
+            <span class="el-icon-close" @click.stop="close"></span>
+          </div>
+          <slot></slot>
         </div>
-        <slot></slot>
       </div>
     </div>
-  </div>
+  </transition>
+
 </template>
 <script>
   export default{
@@ -39,7 +42,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    .wrap{
+    &.drawDown-enter {
+      .wrap {
+        transform: translateY(-100%);
+      }
+    }
+    .wrap {
+      transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
       .box {
         min-width: 620px;
         background: #ffffff;

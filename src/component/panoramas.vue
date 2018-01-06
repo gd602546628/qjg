@@ -5,7 +5,7 @@
       <div class="btn-out" @click.stop="out">退出</div>
       <div class="btn-save" @click.stop="save">保存</div>
     </div>
-    <common-model :show="showModel" title="添加热点" class="model">
+    <common-model :show="showModel" title="添加热点" class="model" @closeModel="closeModel">
       <div class="select-category" v-show="currentType==-1">
         <el-form class="form" :model="formData" :rules="rules" ref="addForm">
 
@@ -171,7 +171,8 @@
         saveFlag: false,
         sysIconList: [], // 服务器icon列表
         selectSysIcon: null,
-        addPointList: [] // 已添加的热点
+        addPointList: [], // 已添加的热点
+        deletePointIds: [] // 要删除的热点id
       }
     },
     created(){
@@ -185,7 +186,6 @@
     methods: {
       async init(){
         let markList = await this.hotGetList()
-        console.log(markList)
         this.saveFlag = false
         this.sourceId = this.sourceId
         this.viewer = PhotoSphereViewer({
@@ -216,10 +216,32 @@
             markers: 'Markers',
             gyroscope: 'Gyroscope'
           },
-          gyroscope: true,
+          gyroscope: true
         })
         this.viewer.on('click', (a) => {
           this.viewerClick(a)
+        })
+        this.viewer.on('select-marker', async (marker, dbclick) => {
+          if (!dbclick) return
+          await this.$confirm('确定删除热点吗?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          })
+          if (marker.data.flag) { // 新添加的点
+            let indexFlag = -1
+            this.addPointList.forEach((item, index) => {
+              if (item.flag == marker.data.flag) {
+                indexFlag = index
+              }
+            })
+            if (indexFlag >= 0) {
+              this.addPointList.splice(indexFlag, 1)
+            }
+          } else {
+            this.deletePointIds.push(marker.data.id)
+          }
+          this.viewer.removeMarker(marker)
         })
       },
       closeModel(){
@@ -263,12 +285,12 @@
       },
       done(){
         this.formData.sourceId = this.sourceId
+        this.formData.flag = util.getRandomString()
         this.addPointList.push(Object.create(this.formData))
         this.addMarker()
         this.closeModel()
       },
       viewerClick(a){ // 场景点击
-        console.log(a)
         this.showModel = true
         this.formData.longitude = a.longitude
         this.formData.latitude = a.latitude
@@ -306,6 +328,7 @@
           }
           params.push(obj)
         })
+        Api.source.hotDelete({ids: this.deletePointIds})
         let data = await Api.source.hotAdd(params)
         if (data.code === code.SUCCESS) {
           this.$message.success('保存成功')
@@ -327,7 +350,8 @@
 <div></div>
 <img src="${filePre + item.icon}" width="50px" height="50px">`,
             longitude: item.longitude,
-            latitude: item.latitude
+            latitude: item.latitude,
+            data: item
           })
         })
         return result
@@ -336,19 +360,22 @@
         this.formData.video = data.data
         console.log(data)
       },
-      beforeVideoUpload(){
+      beforeVideoUpload(data){
+        return this.uploadCheck(/.mp4$/g, '只能上传MP4格式的音频', data)
       },
       iconUploadSuccess(data){
         this.formData.icon = data.data
         console.log(data)
       },
-      beforeIconUpload(){
+      beforeIconUpload(data){
+        return this.uploadCheck(/.[jepg|png|jpg]$/g, '只能上传jepg,jpg,png格式', data)
       },
       imgUploadSuccess(data){
         this.formData.image = data.data
         console.log(data)
       },
-      beforeImgUpload(){
+      beforeImgUpload(data){
+        return this.uploadCheck(/.[jepg|png|jpg]$/g, '只能上传jepg,jpg,png格式', data)
       },
       removeFileList(){ // 每个上传组件，移除文件列表  0 icon 1 img 2video
         let type = this.currentType
@@ -377,9 +404,19 @@
 <div></div>
 <img src="${filePre + this.formData.icon}" width="50px" height="50px">`,
           longitude: this.formData.longitude,
-          latitude: this.formData.latitude
+          latitude: this.formData.latitude,
+          data: this.formData
         }
         this.viewer.addMarker(option)
+      },
+      uploadCheck(reg, errMessage, data){
+        // let test = /.mp3$/g
+        let test = reg
+        let flag = test.test(data.name)
+        if (!flag) {
+          this.$message.error(errMessage)
+        }
+        return flag
       }
     }
   }
