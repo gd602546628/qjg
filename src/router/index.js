@@ -20,6 +20,7 @@ import categoryManage from '@/page/nav1/systemManage/categoryManage.vue'
 import addRole from '@/page/nav1/systemManage/addRole.vue'
 import addAcount from '@/page/nav1/systemManage/addAccount.vue'
 /*账号管理end*/
+import welcome from '@/page/nav1/welcome.vue'
 
 Vue.use(Router)
 
@@ -27,7 +28,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: '/index/nav1/advertiseManage'
+      redirect: '/index/nav1/welcome'
     },
     {
       path: '/login',
@@ -44,8 +45,13 @@ export default new Router({
           path: 'nav1',
           component: nav1,
           name: 'nav1',
-          redirect: '/index/nav1/advertiseManage',
+          redirect: '/index/nav1/welcome',
           children: [
+            {
+              path: 'welcome',
+              component: welcome,
+              name: 'welcome'
+            },
             /*广告管理start*/
             {
               path: 'advertiseManage',

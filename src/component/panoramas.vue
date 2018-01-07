@@ -39,7 +39,7 @@
 
           <el-form-item label="">
             <div class="sysIcon-wrap">
-              <el-radio v-model="selectSysIcon" :label="item" v-for="item in sysIconList">
+              <el-radio v-model="selectSysIcon" :label="item" v-for="item in sysIconList" :key="item.id">
                 <img :src="addFilePre(item.url)" style="height: 20px; width: 20px">
               </el-radio>
             </div>
