@@ -247,7 +247,8 @@
         font-size: 16px;
       }
       .project-image {
-        padding: 18px 0 18px 18px;
+        padding: 18px;
+        font-size: 0;
         .item-wrap {
           display: inline-block;
           width: 25%;
@@ -255,6 +256,7 @@
           margin-top: 10px;
           vertical-align: top;
           overflow: hidden;
+          box-sizing: border-box;
           .item {
             width: 96%;
             padding-bottom: 64%;
@@ -279,6 +281,7 @@
               padding-left: 10px;
               background: rgba(0, 0, 0, 0.8);
               width: 100%;
+              font-size: 16px;
             }
             .hover {
               height: 100%;

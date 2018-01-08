@@ -8,7 +8,7 @@ let urlMap = {
   2: 'http://wangwei.viphk.ngrok.org/pg/'
 }
 let fileMap = {
-  0: 'http://47.104.136.67:80/ftp/file/',
+  0: 'http://47.104.136.67/ftp/',
   1: 'http://172.31.61.40:80/ftp/file/',
   2: 'http://gdweixin.viphk.ngrok.org/'
 }

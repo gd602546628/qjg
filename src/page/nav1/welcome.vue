@@ -5,9 +5,20 @@
         <div class="title">磁盘使用统计</div>
         <div class="content">
           <div class="left">
-            <q-circle :total="total" :data="data"></q-circle>
+            <q-circle :total="total" :data="circleData"></q-circle>
           </div>
-          <div class="right"></div>
+          <div class="right">
+            <div class="data-display">
+              <div class="data-item">
+                <span></span>
+                <p>磁盘总容量：{{total}}MB</p>
+              </div>
+              <div class="data-item" v-for="item in circleData">
+                <span :style="{background:item.style}"></span>
+                <p>{{item.title}}</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -24,7 +35,7 @@
     data(){
       return {
         total: 1000,
-        data: [{title: '已使用300M', value: 700, style: '#ff8d6c', lineStyle: '#ff7662', textStyle: '#ff7662'},
+        circleData: [{title: '已使用700M', value: 700, style: '#ff8d6c', lineStyle: '#ff7662', textStyle: '#ff7662'},
           {title: '剩余300M', value: 300, style: '#f5f5f9', lineStyle: '#d9d9d9', textStyle: '#333333'},
         ]
       }
@@ -67,12 +78,42 @@
           display: flex;
           flex: 1;
           margin: 0;
+          padding: 0 60px;
           .left {
             flex: 1;
             height: 100%;
           }
           .right {
-            width: 30%;
+            display: flex;
+            align-items: center;
+            .data-display {
+              background: #f2f7fb;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              flex-direction: column;
+              padding: 20px 20px;
+              height: 200px;
+              border-radius: 6px;
+              width: 260px;
+              .data-item {
+                display: flex;
+                align-items: center;
+                width: 100%;
+                flex: 1;
+                span {
+                  background: #2ab8fd;
+                  width: 40px;
+                  height: 20px;
+                  border: 1px solid #d9d9d9;
+                  display: block;
+                }
+                p {
+                  flex: 1;
+                  margin-left: 12px;
+                }
+              }
+            }
           }
         }
       }

@@ -78,7 +78,17 @@
         </div>
       </div>
       <div class="add-cj add" v-show="currentType==2">
-
+        <el-form class="form" :model="formData">
+          <el-form-item label="请选择场景：">
+            <el-select v-model="formData.sceneId" placeholder="请选择场景">
+              <el-option :label="item.name" :value="item.id" v-for="item in sceneList"></el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <div class="btn-group">
+          <div class="q-btn-cancel" @click="preStep()">上一步</div>
+          <div class="q-btn-confirm" @click.stip="done">完成</div>
+        </div>
       </div>
       <div class="add-image add" v-show="currentType==3">
         <div class="wrap">
@@ -172,7 +182,8 @@
         sysIconList: [], // 服务器icon列表
         selectSysIcon: null,
         addPointList: [], // 已添加的热点
-        deletePointIds: [] // 要删除的热点id
+        deletePointIds: [], // 要删除的热点id
+        sceneList: [],// 场景列表
       }
     },
     created(){
@@ -186,6 +197,7 @@
     methods: {
       async init(){
         let markList = await this.hotGetList()
+        this.getSceneList()
         this.saveFlag = false
         this.sourceId = this.sourceId
         this.viewer = PhotoSphereViewer({
@@ -417,6 +429,22 @@
           this.$message.error(errMessage)
         }
         return flag
+      },
+      async getSceneList(){ // 获取场景列表，排除当前场景
+        let data = await Api.source.getList({
+          objectId: this.$route.params.id
+        })
+        let list = data.data
+        let currentIndex = -1
+        list.forEach((item, index) => {
+          if (item.id === this.sourceId) {
+            currentIndex = index
+          }
+        })
+        if (currentIndex >= 0) {
+          list.splice(currentIndex, 1)
+        }
+        this.sceneList = list
       }
     }
   }
@@ -501,6 +529,22 @@
           display: flex;
           align-items: center;
           justify-content: center;
+        }
+      }
+      .add-cj {
+        .form {
+          width: 70%;
+          margin: 0 auto;
+          padding-top: 20px;
+          .el-form-item {
+            display: flex;
+            .el-form-item__content {
+              flex: 1;
+              .el-select {
+                width: 100%;
+              }
+            }
+          }
         }
       }
     }

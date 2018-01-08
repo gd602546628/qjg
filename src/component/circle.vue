@@ -68,11 +68,12 @@
           this.ctx.stroke()
           this.ctx.fillStyle = item.item.textStyle
           this.ctx.font = "14px serif";
-          let fontX = item.vector.y === 1 ? item.target.x + 20 : item.target.x - 80
+          let fontX = item.vector.x === 1 ? item.target.x + 14 : item.target.x - 86
           let fontY = item.vector.y === 1 ? item.target.y - 10 : item.target.y - 10
+          fontX = fontX < 0 ? 0 : fontX
+          fontX = fontX > this.parentWidth ? this.parentWidth : fontX
           this.ctx.fillText(item.item.title, fontX, fontY);
         })
-
       },
       initSize(){ // 初始化各种尺寸
         this.canvas = this.$refs.canvas
