@@ -5,7 +5,7 @@
         <div class="title">磁盘使用统计</div>
         <div class="content">
           <div class="left">
-            <q-circle :total="total" :data="circleData"></q-circle>
+            <q-circle :total="total" :data="circleData" v-if="showCircle"></q-circle>
           </div>
           <div class="right">
             <div class="data-display">
@@ -28,6 +28,7 @@
 
 <script>
   import qCircle from '@/component/circle.vue'
+  import Api from '@/api/api'
   export default{
     components: {
       qCircle
@@ -35,9 +36,27 @@
     data(){
       return {
         total: 1000,
+        showCircle: false,
         circleData: [{title: '已使用700M', value: 700, style: '#ff8d6c', lineStyle: '#ff7662', textStyle: '#ff7662'},
           {title: '剩余300M', value: 300, style: '#f5f5f9', lineStyle: '#d9d9d9', textStyle: '#333333'},
         ]
+      }
+    },
+    created(){
+      this.getDoorInfo()
+    },
+    methods: {
+      async getDoorInfo(){
+        let data = await Api.login.getDoorInfo()
+        this.total = data.data.total
+        if (data.data.used == 0) {
+        } else {
+          this.circleData[0].title = `已使用${data.data.used}M`
+          this.circleData[0].value = data.data.used
+          this.circleData[1].title = `剩余${this.total - data.data.used}M`
+          this.circleData[1].value = this.total - data.data.used
+        }
+        this.showCircle = true
       }
     }
   }

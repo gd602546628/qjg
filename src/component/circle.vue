@@ -42,6 +42,7 @@
     methods: {
       init(){
         let begin = -Math.PI / 2 //从-90度开始画
+
         let lineResult = []
         this.data.forEach(item => {
           let end = (Math.PI * 2 * item.value / this.total + begin)
@@ -102,11 +103,17 @@
       },
       drawText(begin, end, item){
         /*degress 中间切点角度*/
-        let degrees = (end + begin + Math.PI) / 2 / Math.PI * 180
+
+        let degrees = (end + begin) / 2 / Math.PI * 180
+
         let point = {
-          x: Math.sin(degrees) * this.bigCircleR + this.canvasCenter.x,
-          y: Math.cos(degrees) * this.bigCircleR + this.canvasCenter.y
+          x: Math.cos(degrees) * this.bigCircleR + this.canvasCenter.x,
+          y: Math.sin(degrees) * this.bigCircleR + this.canvasCenter.y
         }
+        console.log(begin, end)
+        console.log(degrees)
+        console.log(point)
+        console.log('___________________')
         let target = {
           x: 0,
           y: 0

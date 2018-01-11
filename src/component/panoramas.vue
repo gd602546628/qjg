@@ -81,7 +81,7 @@
         <el-form class="form" :model="formData">
           <el-form-item label="请选择场景：">
             <el-select v-model="formData.sceneId" placeholder="请选择场景">
-              <el-option :label="item.name" :value="item.id" v-for="item in sceneList"></el-option>
+              <el-option :label="item.name" :value="item.id" v-for="item in sceneList" :key="item.id"></el-option>
             </el-select>
           </el-form-item>
         </el-form>

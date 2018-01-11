@@ -63,8 +63,8 @@
                 :on-success="imgUploadSuccess"
                 :before-upload="beforeImgUpload"
               >
-                <img v-if="addImgData.url" :src="addImgData.url" class="avatar">
-                <span v-if="!addImgData.url" class="el-icon-plus avatar-uploader-icon"></span>
+                <img v-if="addImgData.previewUrl" :src="addImgData.previewUrl" class="avatar">
+                <span v-if="!addImgData.previewUrl" class="el-icon-plus avatar-uploader-icon"></span>
               </el-upload>
             </div>
           </el-form-item>
@@ -99,7 +99,8 @@
           bgsnd: '',
           content: '',
           name: '',
-          url: ''
+          url: '',
+          previewUrl: ''
         },
         rules: {
           content: [{required: true, message: '请输入描述', trigger: 'blur'}],
@@ -130,7 +131,8 @@
       },
       imgUploadSuccess(data){
         this.loading.close()
-        this.addImgData.url = filePre + data.data
+        this.addImgData.url = data.data.url
+        this.addImgData.previewUrl = filePre + data.data.previewUrl
       },
       openAddModel(){
         this.showAddModel = true
@@ -138,7 +140,8 @@
           bgsnd: '',
           content: '',
           name: '',
-          url: ''
+          url: '',
+          previewUrl: ''
         }
       },
       async getImgList(){
@@ -167,15 +170,16 @@
               bgsnd: this.addImgData.bgsnd,
               content: this.addImgData.content,
               name: this.addImgData.name,
-              url: this.addImgData.url.split(filePre)[1],
-              objectId: this.$route.params.id
+              url: this.addImgData.url,
+              objectId: this.$route.params.id,
+              previewUrl: this.addImgData.previewUrl.split(filePre)[1]
             })
             if (data.code === code.SUCCESS) {
               this.$message.success('添加成功')
               this.closeModel()
               this.imgList.push(data.data)
             } else {
-              this.$message.error(data.error)
+              this.$message.error(data.mesg)
             }
           }
         })
@@ -227,7 +231,7 @@
         }
       },
       backgroundImgFormat(item){
-        return `url(${filePre + item.url})`
+        return `url(${filePre + item.previewUrl})`
       },
       outHanld(){
         this.showViewer = false

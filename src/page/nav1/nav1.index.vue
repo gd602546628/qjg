@@ -8,12 +8,16 @@
         text-color="#fff"
         active-text-color="#ffffff"
       >
+        <el-menu-item index="welcome">
+          <i class="icon-gg title-icon"></i>
+          <span slot="title">首页</span>
+        </el-menu-item>
         <el-menu-item index="advertiseManageIndex" v-if="sysAuth.advert">
-              <i class="icon-gg title-icon"></i>
+          <i class="icon-gg title-icon"></i>
           <span slot="title">广告管理</span>
         </el-menu-item>
         <el-menu-item index="areaManageIndex" v-if="sysAuth.sourceArea">
-           <i class="icon-qygl title-icon"></i>
+          <i class="icon-qygl title-icon"></i>
           <span slot="title">区域管理</span>
         </el-menu-item>
         <el-menu-item index="projectManageIndex" v-if="sysAuth.sourceObject">
@@ -126,7 +130,7 @@
         background-repeat: no-repeat;
         background-position: center;
         background-size: cover;
-        .title-icon{
+        .title-icon {
           margin-right: 20px;
           font-size: 24px;
         }

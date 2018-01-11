@@ -8,6 +8,7 @@ let url = {
   login: `${urlPre}public/login`, //登录
   logout: `${urlPre}public/logout`,//退出
   getValidateCode: `${urlPre}public/getValidateCode`, // 获取验证码
+  getDoorInfo:`${urlPre}system/user/getDoorInfo`, // 获取店铺统计
 }
 let login = {
   async login(params = {}, sessionId){
@@ -20,6 +21,10 @@ let login = {
   },
   async getValidateCode(params = {}){
     let data = await httpService.post(url.getValidateCode, params)
+    return data
+  },
+  async getDoorInfo(params = {}){
+    let data = await httpService.post(url.getDoorInfo, params)
     return data
   },
 }
