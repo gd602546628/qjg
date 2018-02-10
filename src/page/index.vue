@@ -1,10 +1,10 @@
 <template>
   <div class="index" ref="index">
     <div class="index-nav">
-      <div class="title">示例文字</div>
+      <div class="title">管理后台</div>
       <div class="nav">
         <!--  <p class="nav-item active">导航一</p>-->
-        <div class="date">2017年12月01日</div>
+        <div class="date">{{nowTime}}</div>
       </div>
       <div class="user-info">
         <p>{{sysUserBg.account}}</p>
@@ -20,14 +20,18 @@
 <script>
   import {mapGetters, mapActions} from 'vuex'
   import Api from '@/api/api'
+  import util from '@/service/util'
   export default {
     data() {
-      return {}
+      return {
+        nowTime: ''
+      }
     },
     computed: {
       ...mapGetters(['sysUserBg'])
     },
     created(){
+        this.nowTime = util.dateFormat(new Date(),'yyyy年MM月d日')
     },
     mounted(){
     },
@@ -111,5 +115,4 @@
       flex: 1;
     }
   }
-
 </style>

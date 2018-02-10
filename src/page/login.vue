@@ -18,7 +18,9 @@
           <div class="input-wrap">
             <el-input
               placeholder="请输入密码"
-              v-model="password">
+              v-model="password"
+              type="password"
+            >
               <!--  <i slot="prefix" class="el-input__icon el-icon-search"></i>-->
             </el-input>
             <!--   <span class="el-icon-circle-check icon"></span>-->

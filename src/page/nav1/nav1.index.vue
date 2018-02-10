@@ -20,6 +20,10 @@
           <i class="icon-qygl title-icon"></i>
           <span slot="title">区域管理</span>
         </el-menu-item>
+        <el-menu-item index="fileManage" v-if="sysAuth.sourceFile">
+          <i class="icon-wjgl title-icon"></i>
+          <span slot="title">文件管理</span>
+        </el-menu-item>
         <el-menu-item index="projectManageIndex" v-if="sysAuth.sourceObject">
           <i class="icon-xm title-icon"></i>
           <span slot="title">项目管理</span>
@@ -94,6 +98,10 @@
             url: '/advert',
             target: 'advert'
           },
+          {
+            url: '/sourceFile',
+            target: 'sourceFile'
+          }
         ]
         this.sysAuthUrls.forEach(item => {
           for (let i = 0; i < authMap.length; i++) {

@@ -7,7 +7,9 @@
             <p>{{title}}</p>
             <span class="el-icon-close" @click.stop="close"></span>
           </div>
-          <slot></slot>
+         <div class="_prop_content">
+           <slot></slot>
+         </div>
         </div>
       </div>
     </div>
@@ -54,6 +56,10 @@
         background: #ffffff;
         border-radius: 0 0 6px 6px;
         padding-bottom: 30px;
+        ._prop_content{
+          max-height: 700px;
+          overflow-y: scroll;
+        }
         .header {
           height: 44px;
           background: #20a7fe;

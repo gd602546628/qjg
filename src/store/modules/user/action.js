@@ -7,7 +7,9 @@ import Api from '@/api/api'
 let loginAction = async function ({commit, state}, {routeName, params}) {
   let userInfo = await login()
   commit('saveUserInfo', userInfo)
-  getCityInfo({commit, state})
+  if(!state.q_cityInfo){
+    getCityInfo({commit, state})
+  }
   if (routeName) {
     Router.push({
       name: routeName,

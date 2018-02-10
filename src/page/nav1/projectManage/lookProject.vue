@@ -40,21 +40,7 @@
             </el-input>
           </el-form-item>
 
-          <el-form-item label="背景音乐：" class="upload-form-item">
-            <div class="upload-box">
-              <el-upload
-                class="avatar-uploader"
-                :action="source_Upload_sound"
-                :show-file-list="false"
-                :on-success="bgmUploadSuccess"
-                :before-upload="beforeBgmUpload"
-              >
-                <span class="el-icon-plus avatar-uploader-icon"></span>
-              </el-upload>
-            </div>
-          </el-form-item>
-
-          <el-form-item label="项目图片：" prop="url" class="upload-form-item">
+          <el-form-item label="全景图片：" prop="url" class="upload-form-item">
             <div class="upload-box">
               <el-upload
                 class="avatar-uploader"
@@ -69,6 +55,10 @@
             </div>
           </el-form-item>
 
+          <el-form-item label="背景音乐：" class="upload-form-item">
+           <file-music @confirm="selectMusicConfirm"></file-music>
+          </el-form-item>
+
         </el-form>
         <div class="btn-group">
           <div class="q-btn-confirm" @click.stip="uploadImgConfirm">确定</div>
@@ -79,8 +69,6 @@
     <panoramas v-if="showViewer" :sourceId="currentSource.id" :img="currentSource.url" @out="outHanld"></panoramas>
   </div>
 </template>
-
-
 <script>
   import commonBox from '@/component/commonBox.vue'
   import Api from '@/api/api'
@@ -88,6 +76,8 @@
   import{mapGetters} from 'vuex'
   import {filePre, code} from '@/config/config'
   import panoramas from '@/component/panoramas.vue'
+  import fileSelect from '@/component/fileSelect/fileSelect.vue'
+  import fileMusic from '@/component/fileSelectComponent/music.vue'
   export default{
     data(){
       return {
@@ -110,16 +100,19 @@
         showViewer: false,
         currentSource: {},
         uploadImgList: [],
-        loading: null
+        loading: null,
+        playFlag: false,//音频播放标记
       }
     },
     computed: {
-      ...mapGetters(['source_Upload', 'source_Upload_sound'])
+      ...mapGetters(['source_Upload'])
     },
     components: {
       commonBox,
       commonModel,
-      panoramas
+      panoramas,
+      fileSelect,
+      fileMusic
     },
     created(){
       this.init()
@@ -158,7 +151,7 @@
       },
       init(){
         this.getImgList()
-        this.getObject()
+       // this.getObject()
       },
       closeModel(){
         this.showAddModel = false
@@ -217,9 +210,13 @@
       edit(item){
         this.currentSource = item
         this.showViewer = true
-        console.log(item)
       },
       async deleteItem(item, index){
+        await this.$confirm('确定删除全景图吗?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
         let data = await Api.source.deleteById({
           id: item.id
         })
@@ -233,8 +230,14 @@
       backgroundImgFormat(item){
         return `url(${filePre + item.previewUrl})`
       },
+      addFilePre(value){
+        return filePre + value
+      },
       outHanld(){
         this.showViewer = false
+      },
+      selectMusicConfirm(url){
+        this.addImgData.bgsnd = url
       }
     }
   }
@@ -341,7 +344,6 @@
               left: 50%;
               top: 40%;
               margin-left: -15px;
-
             }
           }
         }
@@ -369,6 +371,13 @@
           }
           .upload-form-item {
             justify-content: flex-start;
+            .fileComponent-music{
+              width: 178px;
+              .music-bg{
+                width: 178px;
+                height: 178px;
+              }
+            }
             .upload-box {
               .pro-image {
                 font-size: 14px;

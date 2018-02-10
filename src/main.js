@@ -8,6 +8,8 @@ import './assets/css/element.scss'
 import './assets/css/common.scss'
 import './assets/css/font.scss'
 import store from './store/index'
+import filter from './filter/filter'
+Vue.use(filter)
 Vue.use(Element)
 Vue.config.productionTip = false
 

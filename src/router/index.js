@@ -20,6 +20,10 @@ import categoryManage from '@/page/nav1/systemManage/categoryManage.vue'
 import addRole from '@/page/nav1/systemManage/addRole.vue'
 import addAcount from '@/page/nav1/systemManage/addAccount.vue'
 /*账号管理end*/
+
+/*文件管理start*/
+import fileManage from '@/page/nav1/fileManage/fileManage.vue'
+/*文件管理end*/
 import welcome from '@/page/nav1/welcome.vue'
 
 Vue.use(Router)
@@ -117,8 +121,15 @@ export default new Router({
               meta: {
                 activeName: 'accountManage'
               }
-            }
+            },
             /*系统管理End*/
+            /*文件管理start*/
+            {
+              path: 'fileManage',
+              component: fileManage,
+              name: 'fileManage'
+            },
+            /*文件管理end*/
           ]
         }
       ]

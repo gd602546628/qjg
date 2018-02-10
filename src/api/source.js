@@ -12,6 +12,9 @@ let url = {
   iconGetList: `${urlPre}source/icon/getList`,
   hotAdd: `${urlPre}source/hotspot/add`,
   hotDelete: `${urlPre}source/hotspot/deleteById`,
+  getSourceFile: `${urlPre}sourceFile/getList`,
+  deleteSourceFileById: `${urlPre}sourceFile/deleteById`,
+  getAllIcon: `${urlPre}source/icon/getAll`,
 }
 let source = {
   getList: async function (params = {}) {
@@ -40,6 +43,18 @@ let source = {
   },
   hotDelete: async function (params = {}) {
     let data = await httpService.post(url.hotDelete, params)
+    return data
+  },
+  getSourceFile: async function (params = {}) {
+    let data = await httpService.post(url.getSourceFile, params)
+    return data
+  },
+  deleteSourceFileById: async function (params = {}) {
+    let data = await httpService.post(url.deleteSourceFileById, params)
+    return data
+  },
+  getAllIcon: async function (params = {}) {
+    let data = await httpService.post(url.getAllIcon, params)
     return data
   },
 }

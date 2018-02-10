@@ -49,13 +49,10 @@
       async getDoorInfo(){
         let data = await Api.login.getDoorInfo()
         this.total = data.data.total
-        if (data.data.used == 0) {
-        } else {
-          this.circleData[0].title = `已使用${data.data.used}M`
-          this.circleData[0].value = data.data.used
-          this.circleData[1].title = `剩余${this.total - data.data.used}M`
-          this.circleData[1].value = this.total - data.data.used
-        }
+        this.circleData[0].title = `已使用${data.data.used}M`
+        this.circleData[0].value = data.data.used
+        this.circleData[1].title = `剩余${this.total - data.data.used}M`
+        this.circleData[1].value = this.total - data.data.used
         this.showCircle = true
       }
     }

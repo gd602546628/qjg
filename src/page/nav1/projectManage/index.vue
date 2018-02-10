@@ -1,5 +1,5 @@
 <template>
-  <div class="page-wrap">
+  <div class="page-wrap" v-if="q_cityInfo">
     <div class="project-category-manage-box">
       <el-scrollbar class="scroll-bar">
         <div class="scroll-bar-content">
@@ -83,6 +83,9 @@
         </div>
       </div>
       <q-table :tableHeader="tableHeader" :tableData="tableData" :showOperation="true" :hideDelete="true"></q-table>
+      <!--TODO:修改data-clipboard-text为连接-->
+      <input hidden v-for="item in tableData" ref="copyInput" :value="item.name"
+             :data-clipboard-text="'http://www.yungoods.com/mobile/#/'+item.id"/>
       <div class="pagination">
         <el-pagination
           background
@@ -113,9 +116,10 @@
             <!--  <p class="pro-image">项目图片：</p>-->
             <el-upload
               class="avatar-uploader"
-              :action="pro_uploadImage"
+              :action="upload_file"
               :show-file-list="false"
               :on-success="handleAvatarSuccess"
+              :data="{type:5}"
             >
               <img v-if="formData.imageUrl" :src="formData.imageUrl" class="avatar">
               <span v-if="!formData.imageUrl" class="el-icon-plus avatar-uploader-icon"></span>
@@ -123,6 +127,35 @@
           </div>
         </el-form-item>
 
+        <el-form-item label="微信二维码：">
+          <div class="upload-box">
+            <!--  <p class="pro-image">项目图片：</p>-->
+            <el-upload
+              class="avatar-uploader"
+              :action="upload_file"
+              :show-file-list="false"
+              :on-success="handleEwmSuccess"
+              :data="{type:2}"
+            >
+              <img v-if="formData.ewmUrl" :src="formData.ewmUrl" class="avatar">
+              <span v-if="!formData.ewmUrl" class="el-icon-plus avatar-uploader-icon"></span>
+            </el-upload>
+          </div>
+        </el-form-item>
+
+        <el-form-item label="项目坐标：">
+          <el-input v-model="formData.point" placeholder="请输入项目坐标" disabled></el-input>
+          <el-input v-model="currentCity" placeholder="请输入项目坐标" disabled style="margin-top: 10px"></el-input>
+          <div class="detail-address">
+            <el-input placeholder="请输入详细地址" v-model="address"></el-input>
+            <el-button @click.stop="getPoint" style="margin-left:10px">获取坐标</el-button>
+          </div>
+        </el-form-item>
+        <b-map :point="formData.point"
+               @mapClick="createMapClick"
+               ref="Bmap1"
+               style="width: 90%;height:400px"
+        ></b-map>
       </el-form>
       <div class="btn-group">
         <div class="q-btn-confirm" @click.stip="addProjectConfirm">确定</div>
@@ -142,6 +175,20 @@
             <el-option :label="item.name" :value="item" v-for="item in cateList" :key="item.id"></el-option>
           </el-select>
         </el-form-item>
+
+        <el-form-item label="项目坐标：">
+          <el-input v-model="currentProPoint" placeholder="请输入项目坐标" disabled></el-input>
+          <el-input v-model="currentCity" placeholder="请输入项目坐标" disabled style="margin-top: 10px"></el-input>
+          <div class="detail-address">
+            <el-input placeholder="请输入详细地址" v-model="address"></el-input>
+            <el-button @click.stop="getPointEdit" style="margin-left:10px">获取坐标</el-button>
+          </div>
+        </el-form-item>
+        <b-map :point="formData.point"
+               @mapClick="editMapClick"
+               ref="Bmap2"
+               style="width: 90%;height:400px"
+        ></b-map>
       </el-form>
       <div class="btn-group">
         <div class="q-btn-confirm" @click.stip="modifyProjectConfirm">确定</div>
@@ -154,15 +201,22 @@
   import qTable from '@/component/table.vue'
   import commonModel from '@/component/commonModel.vue'
   import Api from '@/api/api'
-  import {mapGetters} from 'vuex'
+  import {mapGetters, mapMutations} from 'vuex'
   import {filePre, code} from '@/config/config'
+  import clipboard from 'clipboard'
+  import BMap from '@/component/BMap.vue'
+
   export default{
     components: {
       qTable,
-      commonModel
+      commonModel,
+      BMap
     },
     computed: {
-      ...mapGetters(['q_cityInfo', 'pro_uploadImage'])
+      ...mapGetters(['q_cityInfo', 'upload_file', 'upload_file', 'defaultAreaSelect']),
+      detailAddress(){
+        return this.currentCity + this.address
+      }
     },
     data(){
       return {
@@ -217,39 +271,47 @@
             label: '删除',
             color: '#ff5656',
             handle: this.delete,
-          }
+          },
+          {
+            label: '复制连接',
+            color: '#20a7fe',
+            handle: this.copyLink,
+          },
         ],
         formData: {
           name: '',
           category: '',
-          imageUrl: ''
+          imageUrl: '',
+          ewmUrl: '',
+          point: ''
         },
         rules: {
           name: [{required: true, message: '请输入姓名', trigger: 'blur'},
             {min: 1, max: 20, message: '名称为1-20位汉子、字母、数字、特殊字符', trigger: 'blur'}],
           category: [{required: true, message: '请选择一个分类', trigger: 'change'}],
-          imageUrl: [{required: true, message: '请上传图片', trigger: 'change'}]
+          imageUrl: [{required: true, message: '请上传图片', trigger: 'change'}],
         },
         areaList: [],
-        defaultAreaSelect: [], // 默认行政区域选择
         currentAreaIndex: -1, // 选择的区域索引
         cateList: [],
-        addFlag: false, //标记是否正在添加，防止重复添加
-        currentPro: {} // 当前操作的项目obj
+        addFlag: false, // 标记是否正在添加，防止重复添加
+        currentPro: {}, // 当前操作的项目obj
+        currentCity: '', //当前区域省市区拼接
+        address: '',
+        currentProPoint: '',// 当前操作的项目坐标拼接
       }
     },
     async created(){
       this.getCateList()
-      this.defaultAreaSelect = [this.q_cityInfo[0].id,
-        this.q_cityInfo[0].nextArea[0].id,
-        this.q_cityInfo[0].nextArea[0].nextArea[0].id
-      ]
       await this.getAreaList(this.defaultAreaSelect)
       this.selectOption.areaId = this.areaList[0].id
+      this.currentCity = this.areaList[0].provinceName + this.areaList[0].cityName + this.areaList[0].countyName
+      this.formData.point = `${this.areaList[0].lattitude},${this.areaList[0].longitude}`
       this.currentAreaIndex = 0
       this.getObjectList()
     },
     methods: {
+      ...mapMutations(['saveDefaultAreaSelect']),
       async getCateList(){
         let data = await Api.cate.getList()
         this.cateList = data.data
@@ -264,9 +326,23 @@
       },
       edit(index, item){
         this.currentPro = item
+        this.formData.name = item.name
+        this.formData.category = item.cateName
         this.showModifyModel = true
+        this.currentProPoint = `${item.lattitude},${item.longitude}`
+        this.$nextTick(() => {
+          this.$refs.Bmap2.changePoint(this.currentProPoint)
+          this.$refs.Bmap2.pointToAddress(this.currentProPoint).then((address) => {
+            this.address = address.addressComponents.street + address.addressComponents.streetNumber
+          })
+        })
       },
       async delete(index, item){
+        await this.$confirm('确定删除项目吗?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
         let data = await Api.sourceObject.deleteById({
           id: item.id
         })
@@ -280,13 +356,28 @@
       addProject(){ // 添加项目
         this.showModel = true
       },
+      copyLink(index, item){
+        let a = new clipboard(this.$refs.copyInput[index])
+        setTimeout(() => { // 解决点击两次才会触发复制
+          this.$refs.copyInput[index].click()
+        }, 0)
+        a.on('success', (e) => {
+          this.$message.success('复制成功')
+        })
+        a.on('error', (e) => {
+          this.$message.error('复制失败，请重试')
+        })
+      },
       closeModel(){
         this.showModel = false
         this.showModifyModel = false
+        this.address = ''
         this.formData = {
           name: '',
           category: '',
-          imageUrl: ''
+          imageUrl: '',
+          ewmUrl: '',
+          point: this.formData.point
         }
       },
       loadPage(currentPage){
@@ -309,6 +400,7 @@
         this.tableData = list
       },
       selectCity(value){ // 选择城市 value：array<String> [省ID，市ID，区ID]
+        this.saveDefaultAreaSelect(value)
         this.getAreaList(value)
       },
       async getAreaList(arr){
@@ -323,6 +415,9 @@
       },
       areaSelectClick(item, index){ // 点击区域进行筛选
         this.currentAreaIndex = index
+        this.formData.point = `${item.lattitude},${item.longitude}`
+        this.currentCity = item.provinceName + item.cityName + item.countyName
+        this.address = ''
         this.selectOption = {
           cateId: null,
           endTime: null,
@@ -341,6 +436,13 @@
           this.$message.error(e.mesg)
         }
       },
+      handleEwmSuccess(e){// 上传成功处理
+        if (e.code == code.SUCCESS) {
+          this.formData.ewmUrl = filePre + e.data
+        } else {
+          this.$message.error(e.mesg)
+        }
+      },
       addProjectConfirm(){
         if (this.addFlag) return
         this.addFlag = true
@@ -351,7 +453,10 @@
               cateId: this.formData.category.id,
               cateName: this.formData.category.name,
               image: this.formData.imageUrl.split(filePre)[1],
-              name: this.formData.name
+              webchatImg: this.formData.ewmUrl.split(filePre)[1],
+              name: this.formData.name,
+              lattitude: this.formData.point.split(',')[0],
+              longitude: this.formData.point.split(',')[1]
             })
             if (data.code === code.SUCCESS) {
               this.$message.success('添加成功')
@@ -377,17 +482,47 @@
               areaId: this.selectOption.areaId,
               cateId: this.formData.category.id,
               cateName: this.formData.category.name,
-              name: this.formData.name
+              name: this.formData.name,
+              lattitude: this.currentProPoint.split(',')[0],
+              longitude: this.currentProPoint.split(',')[1],
             })
             if (data.code === code.SUCCESS) {
               this.$message.success('修改成功')
               this.currentPro.name = this.formData.name
               this.currentPro.cateName = this.formData.category.name
+              this.currentPro.lattitude = this.currentProPoint.split(',')[0]
+              this.currentPro.longitude = this.currentProPoint.split(',')[1]
               this.closeModel()
             } else {
               this.$message.error(data.mesg)
             }
           }
+        })
+      },
+      createMapClick(e){ // 创建项目中地图点击事件处理
+        this.formData.point = `${e.point.lat},${e.point.lng}`
+        this.$refs.Bmap1.changePoint(this.formData.point)
+        this.$refs.Bmap1.pointToAddress(this.formData.point).then((address) => {
+          this.address = address.addressComponents.street + address.addressComponents.streetNumber
+        })
+      },
+      getPoint(){// 创建项目中 获取坐标按钮点击
+        this.$refs.Bmap1.changePointByAddress(this.detailAddress)
+        this.$refs.Bmap1.addressToPoint(this.detailAddress).then((point) => {
+          this.formData.point = `${point.lat},${point.lng}`
+        })
+      },
+      editMapClick(e){ //修改项目地图点击事件
+        this.currentProPoint = `${e.point.lat},${e.point.lng}`
+        this.$refs.Bmap2.changePoint(this.currentProPoint)
+        this.$refs.Bmap2.pointToAddress(this.currentProPoint).then((address) => {
+          this.address = address.addressComponents.street + address.addressComponents.streetNumber
+        })
+      },
+      getPointEdit(){//修改项目地图获取坐标
+        this.$refs.Bmap2.changePointByAddress(this.detailAddress)
+        this.$refs.Bmap2.addressToPoint(this.detailAddress).then((point) => {
+          this.currentProPoint = `${point.lat},${point.lng}`
         })
       }
     }
@@ -567,6 +702,10 @@
         justify-content: center;
         border-top: 1px solid #d9d9d9;
         padding-top: 30px;
+      }
+      .detail-address {
+        display: flex;
+        margin-top: 10px;
       }
     }
   }

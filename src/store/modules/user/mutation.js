@@ -25,8 +25,13 @@ let saveCityInfo = function (state, cityInfo) {
   state.q_cityInfo = cityInfo
   localStore.setStorage('q_cityInfo', cityInfo)
 }
+let saveDefaultAreaSelect = function (state, defaultAreaSelect) {
+  state.defaultAreaSelect = defaultAreaSelect
+  localStore.setStorage('defaultAreaSelect', defaultAreaSelect)
+}
 export default {
   saveUserInfo,
   clearUserInfo,
-  saveCityInfo
+  saveCityInfo,
+  saveDefaultAreaSelect
 }

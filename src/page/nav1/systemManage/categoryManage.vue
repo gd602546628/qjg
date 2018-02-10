@@ -262,7 +262,7 @@
     }
     .model-form {
       .form {
-        height: 196px;
+        //height: 196px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -276,7 +276,6 @@
             width: 320px;
           }
         }
-
       }
       .btn-group {
         display: flex;

@@ -14,7 +14,7 @@
           </el-form-item>
 
           <el-form-item label="热点类型：" prop="type">
-            <el-select v-model="formData.type" placeholder="请选择热点类型" @change="typeChange">
+            <el-select v-model="formData.type" placeholder="请选择热点类型">
               <el-option label="文字" :value="0"></el-option>
               <el-option label="链接" :value="1"></el-option>
               <el-option label="场景" :value="2"></el-option>
@@ -23,26 +23,8 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="指示图标：" prop="icon">
-            <el-upload
-              class="upload-demo"
-              :action="this.source_Upload_icon"
-              :limit="1"
-              :file-list="iconList"
-              :on-success="iconUploadSuccess"
-              :before-upload="beforeIconUpload"
-              :on-remove="removeFileList"
-            >
-              <el-button size="small" type="primary">添加自定义图标</el-button>
-            </el-upload>
-          </el-form-item>
-
-          <el-form-item label="">
-            <div class="sysIcon-wrap">
-              <el-radio v-model="selectSysIcon" :label="item" v-for="item in sysIconList" :key="item.id">
-                <img :src="addFilePre(item.url)" style="height: 20px; width: 20px">
-              </el-radio>
-            </div>
+          <el-form-item label="指示图标：" prop="icon" class="icon-form">
+            <file-icon @confirm="iconSelectConfirm"></file-icon>
           </el-form-item>
         </el-form>
         <div class="btn-group">
@@ -92,17 +74,7 @@
       </div>
       <div class="add-image add" v-show="currentType==3">
         <div class="wrap">
-          <el-upload
-            class="upload-demo"
-            :action="this.source_Upload_img"
-            :limit="1"
-            :file-list="imgList"
-            :on-success="imgUploadSuccess"
-            :before-upload="beforeImgUpload"
-            :on-remove="removeFileList"
-          >
-            <el-button size="medium" type="primary">添加图片</el-button>
-          </el-upload>
+          <file-img @confirm="imgSelectConfirm"></file-img>
         </div>
         <div class="btn-group">
           <div class="q-btn-cancel" @click="preStep()">上一步</div>
@@ -111,17 +83,7 @@
       </div>
       <div class="add-video add" v-show="currentType==4">
         <div class="wrap">
-          <el-upload
-            class="upload-demo"
-            :action="this.source_Upload_video"
-            :limit="1"
-            :file-list="imgList"
-            :on-success="videoUploadSuccess"
-            :before-upload="beforeVideoUpload"
-            :on-remove="removeFileList"
-          >
-            <el-button size="medium" type="primary">添加视频</el-button>
-          </el-upload>
+          <file-video @confirm="videoConfirmSelect"></file-video>
         </div>
         <div class="btn-group">
           <div class="q-btn-cancel" @click="preStep()">上一步</div>
@@ -140,16 +102,23 @@
   import {filePre, code} from '@/config/config'
   import Api from '@/api/api'
   import {mapGetters} from 'vuex'
+  import fileSelect from '@/component/fileSelect/fileSelect.vue'
+  import fileIcon from '@/component/fileSelectComponent/icon.vue'
+  import fileImg from '@/component/fileSelectComponent/img.vue'
+  import fileVideo from '@/component/fileSelectComponent/video.vue'
   export default{
     props: {
       sourceId: Number,
       img: String
     },
     components: {
-      commonModel
+      commonModel,
+      fileSelect,
+      fileIcon,
+      fileImg,
+      fileVideo
     },
     computed: {
-      ...mapGetters(['source_Upload_icon', 'source_Upload_img', 'source_Upload_video'])
     },
     data(){
       return {
@@ -179,7 +148,6 @@
         videoList: [],
         currentType: -1,
         saveFlag: false,
-        sysIconList: [], // 服务器icon列表
         selectSysIcon: null,
         addPointList: [], // 已添加的热点
         deletePointIds: [], // 要删除的热点id
@@ -199,7 +167,6 @@
         let markList = await this.hotGetList()
         this.getSceneList()
         this.saveFlag = false
-        this.sourceId = this.sourceId
         this.viewer = PhotoSphereViewer({
           container: this.$refs.panorama,
           panorama: filePre + this.img,
@@ -273,17 +240,14 @@
           url: '',
           video: ''
         }
-        this.sysIconList = []
         this.selectSysIcon = null
       },
       nextStep(){ //下一步
-        console.log(this.formData)
         if (!this.formData.icon && this.selectSysIcon) {
           this.formData.icon = this.selectSysIcon.url
         }
         this.$refs.addForm.validate(async validate => {
           if (validate) {
-            console.log(this.formData)
             if (this.formData.type == 0) {
               this.done()
             } else {
@@ -345,6 +309,8 @@
         if (data.code === code.SUCCESS) {
           this.$message.success('保存成功')
           this.saveFlag = true
+          this.addPointList = []
+          this.deletePointIds = []
         } else {
           this.$message.error(data.mesg)
         }
@@ -368,46 +334,6 @@
         })
         return result
       },
-      videoUploadSuccess(data){
-        this.formData.video = data.data
-        console.log(data)
-      },
-      beforeVideoUpload(data){
-        return this.uploadCheck(/.mp4$/g, '只能上传MP4格式的音频', data)
-      },
-      iconUploadSuccess(data){
-        this.formData.icon = data.data
-        console.log(data)
-      },
-      beforeIconUpload(data){
-        return this.uploadCheck(/.[jepg|png|jpg]$/g, '只能上传jepg,jpg,png格式', data)
-      },
-      imgUploadSuccess(data){
-        this.formData.image = data.data
-        console.log(data)
-      },
-      beforeImgUpload(data){
-        return this.uploadCheck(/.[jepg|png|jpg]$/g, '只能上传jepg,jpg,png格式', data)
-      },
-      removeFileList(){ // 每个上传组件，移除文件列表  0 icon 1 img 2video
-        let type = this.currentType
-        if (type === 0) {
-          this.formData.icon = ''
-        } else if (type === 3) {
-          this.formData.image = ''
-        } else if (type === 4) {
-          this.formData.video = ''
-        }
-      },
-      async typeChange(value){ // 类型选择选项更改，变换图标
-        let data = await Api.source.iconGetList({
-          type: value
-        })
-        this.sysIconList = data.data
-      },
-      addFilePre(value){
-        return filePre + value
-      },
       addMarker(){ // 绘制
         let option = {
           id: util.getRandomString(),
@@ -420,15 +346,6 @@
           data: this.formData
         }
         this.viewer.addMarker(option)
-      },
-      uploadCheck(reg, errMessage, data){
-        // let test = /.mp3$/g
-        let test = reg
-        let flag = test.test(data.name)
-        if (!flag) {
-          this.$message.error(errMessage)
-        }
-        return flag
       },
       async getSceneList(){ // 获取场景列表，排除当前场景
         let data = await Api.source.getList({
@@ -445,6 +362,15 @@
           list.splice(currentIndex, 1)
         }
         this.sceneList = list
+      },
+      iconSelectConfirm(url){
+        this.formData.icon = url
+      },
+      imgSelectConfirm(url){
+        this.formData.image = url
+      },
+      videoConfirmSelect(url){
+        this.formData.video = url
       }
     }
   }
@@ -489,6 +415,20 @@
           width: 70%;
           margin: 0 auto;
           padding-top: 20px;
+          .icon-form {
+            .el-form-item__content {
+              .fileComponent-icon {
+                align-items: flex-start;
+                .icon-img {
+                  width: 50px;
+                  height: 50px;
+                }
+              }
+              .el-button {
+                display: block;
+              }
+            }
+          }
           .el-form-item {
             display: flex;
             .el-form-item__content {
@@ -525,10 +465,18 @@
       }
       .add-image, .add-video {
         .wrap {
-          height: 200px;
           display: flex;
           align-items: center;
           justify-content: center;
+          flex-direction: column;
+        }
+      }
+      .add-image{
+        .fileComponent-img{
+          .icon-img{
+            width: 275px;
+            height: 275px;
+          }
         }
       }
       .add-cj {

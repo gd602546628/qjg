@@ -1,8 +1,6 @@
 <template>
   <canvas class="canvas" ref="canvas"></canvas>
 </template>
-
-
 <script>
   export default{
     props: {
@@ -40,41 +38,18 @@
       this.init()
     },
     methods: {
-      init(){
+      init()  {
         let begin = -Math.PI / 2 //从-90度开始画
 
         let lineResult = []
         this.data.forEach(item => {
           let end = (Math.PI * 2 * item.value / this.total + begin)
           this.fillCircle(begin, end, item.style)
-          lineResult.push(this.drawText(begin, end, item))
+          lineResult.push(this.getTextPoint(begin, end, item))
           begin = end
         })
         this.fillSmallCircle()
-        lineResult.forEach(item => {
-          this.ctx.beginPath()
-          this.ctx.moveTo(item.move.x, item.move.y)
-          this.ctx.lineTo(item.target.x, item.target.y)
-          this.ctx.closePath()
-          this.ctx.lineWidth = 3
-          this.ctx.strokeStyle = item.item.lineStyle
-          this.ctx.stroke()
-
-          this.ctx.beginPath()
-          this.ctx.moveTo(item.target.x, item.target.y)
-          this.ctx.lineTo(item.target.x + 100 * item.vector.x, item.target.y)
-          this.ctx.closePath()
-          this.ctx.lineWidth = 3
-          this.ctx.strokeStyle = item.item.lineStyle
-          this.ctx.stroke()
-          this.ctx.fillStyle = item.item.textStyle
-          this.ctx.font = "14px serif";
-          let fontX = item.vector.x === 1 ? item.target.x + 14 : item.target.x - 86
-          let fontY = item.vector.y === 1 ? item.target.y - 10 : item.target.y - 10
-          fontX = fontX < 0 ? 0 : fontX
-          fontX = fontX > this.parentWidth ? this.parentWidth : fontX
-          this.ctx.fillText(item.item.title, fontX, fontY);
-        })
+        //this.drawText(lineResult)
       },
       initSize(){ // 初始化各种尺寸
         this.canvas = this.$refs.canvas
@@ -101,7 +76,7 @@
         this.ctx.fillStyle = '#ffffff'
         this.ctx.fill()
       },
-      drawText(begin, end, item){
+      getTextPoint(begin, end, item){
         /*degress 中间切点角度*/
 
         let degrees = (end + begin) / 2 / Math.PI * 180
@@ -110,10 +85,6 @@
           x: Math.cos(degrees) * this.bigCircleR + this.canvasCenter.x,
           y: Math.sin(degrees) * this.bigCircleR + this.canvasCenter.y
         }
-        console.log(begin, end)
-        console.log(degrees)
-        console.log(point)
-        console.log('___________________')
         let target = {
           x: 0,
           y: 0
@@ -129,6 +100,32 @@
           vector: vector,
           item: item
         }
+      },
+      drawText(lineResult){
+        lineResult.forEach(item => {
+          this.ctx.beginPath()
+          this.ctx.moveTo(item.move.x, item.move.y)
+          this.ctx.lineTo(item.target.x, item.target.y)
+          this.ctx.closePath()
+          this.ctx.lineWidth = 3
+          this.ctx.strokeStyle = item.item.lineStyle
+          this.ctx.stroke()
+
+          this.ctx.beginPath()
+          this.ctx.moveTo(item.target.x, item.target.y)
+          this.ctx.lineTo(item.target.x + 100 * item.vector.x, item.target.y)
+          this.ctx.closePath()
+          this.ctx.lineWidth = 3
+          this.ctx.strokeStyle = item.item.lineStyle
+          this.ctx.stroke()
+          this.ctx.fillStyle = item.item.textStyle
+          this.ctx.font = "14px serif";
+          let fontX = item.vector.x === 1 ? item.target.x + 14 : item.target.x - 86
+          let fontY = item.vector.y === 1 ? item.target.y - 10 : item.target.y - 10
+          fontX = fontX < 0 ? 0 : fontX
+          fontX = fontX > this.parentWidth ? this.parentWidth : fontX
+          this.ctx.fillText(item.item.title, fontX, fontY);
+        })
       }
     }
   }

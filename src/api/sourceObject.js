@@ -5,11 +5,11 @@
 import httpService from '@/service/httpService'
 import {urlPre} from '@/config/config'
 let url = {
-  deleteById: `${urlPre}sourceObject/deleteById`, // 删除项目
-  update: `${urlPre}sourceObject/update`,// 更新项目
-  getList: `${urlPre}sourceObject/getList`, //项目列表
-  add: `${urlPre}sourceObject/add`, //添加项目
-  getById: `${urlPre}sourceObject/getById`, //跟新项目
+  deleteById: `${urlPre}source/sourceObject/deleteById`, // 删除项目
+  update: `${urlPre}source/sourceObject/update`,// 更新项目
+  getList: `${urlPre}source/sourceObject/getList`, //项目列表
+  add: `${urlPre}source/sourceObject/add`, //添加项目
+  getById: `${urlPre}source/sourceObject/getById`, //跟新项目
 }
 let sourceObject = {
   deleteById: async function (params = {}) {
