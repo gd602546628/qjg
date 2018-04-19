@@ -31,7 +31,7 @@
       ...mapGetters(['sysUserBg'])
     },
     created(){
-        this.nowTime = util.dateFormat(new Date(),'yyyy年MM月d日')
+      this.nowTime = util.dateFormat(new Date(), 'yyyy年MM月d日')
     },
     mounted(){
     },

@@ -7,6 +7,7 @@ export default {
   JSESSIONID: localStorage.getStorage('JSESSIONID'),
   sysAuthUrls: localStorage.getStorage('sysAuthUrls'),
   sysUserBg: localStorage.getStorage('sysUserBg'),
+  sysDoor: localStorage.getStorage('sysDoor'),
   q_cityInfo: localStorage.getStorage('q_cityInfo') || null,
   defaultAreaSelect: localStorage.getStorage('defaultAreaSelect')
 }

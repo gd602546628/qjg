@@ -8,16 +8,16 @@
               <span class="el-icon-plus"></span>
               <div>添加分类</div>
             </div>-->
-          <el-cascader
-            style="margin:20px 0"
-            placeholder="试试搜索：玉溪"
-            :options="q_cityInfo"
-            filterable
-            :props="cityInfoProp"
-            expand-trigger="hover"
-            @change="selectCity"
-            :value="defaultAreaSelect"
-          ></el-cascader>
+          <!--  <el-cascader
+              style="margin:20px 0"
+              placeholder="试试搜索：玉溪"
+              :options="q_cityInfo"
+              filterable
+              :props="cityInfoProp"
+              expand-trigger="hover"
+              @change="selectCity"
+              :value="defaultAreaSelect"
+            ></el-cascader>-->
           <ul class="category-list">
             <li v-for="(item,index) in areaList"
                 :class="{active:currentAreaIndex==index}"
@@ -85,7 +85,7 @@
       <q-table :tableHeader="tableHeader" :tableData="tableData" :showOperation="true" :hideDelete="true"></q-table>
       <!--TODO:修改data-clipboard-text为连接-->
       <input hidden v-for="item in tableData" ref="copyInput" :value="item.name"
-             :data-clipboard-text="'http://www.yungoods.com/mobile/#/'+item.id"/>
+             :data-clipboard-text="addProjectPre(item.id)"/>
       <div class="pagination">
         <el-pagination
           background
@@ -202,7 +202,7 @@
   import commonModel from '@/component/commonModel.vue'
   import Api from '@/api/api'
   import {mapGetters, mapMutations} from 'vuex'
-  import {filePre, code} from '@/config/config'
+  import {filePre, code, projectPre} from '../../../config/config'
   import clipboard from 'clipboard'
   import BMap from '@/component/BMap.vue'
 
@@ -213,7 +213,7 @@
       BMap
     },
     computed: {
-      ...mapGetters(['q_cityInfo', 'upload_file', 'upload_file', 'defaultAreaSelect']),
+      ...mapGetters(['q_cityInfo', 'upload_file', 'upload_file', 'defaultAreaSelect', 'sysDoor']),
       detailAddress(){
         return this.currentCity + this.address
       }
@@ -303,7 +303,7 @@
     },
     async created(){
       this.getCateList()
-      await this.getAreaList(this.defaultAreaSelect)
+      await this.getAreaList([this.sysDoor.provinceCode, this.sysDoor.cityCode, this.sysDoor.countyCode])
       this.selectOption.areaId = this.areaList[0].id
       this.currentCity = this.areaList[0].provinceName + this.areaList[0].cityName + this.areaList[0].countyName
       this.formData.point = `${this.areaList[0].lattitude},${this.areaList[0].longitude}`
@@ -312,6 +312,9 @@
     },
     methods: {
       ...mapMutations(['saveDefaultAreaSelect']),
+      addProjectPre(val){
+        return projectPre + val
+      },
       async getCateList(){
         let data = await Api.cate.getList()
         this.cateList = data.data

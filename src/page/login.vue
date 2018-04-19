@@ -52,7 +52,7 @@
         password: '',
         code: '',
         sessionId: '',
-        base64: ''
+        base64: '',
       }
     },
     computed: {

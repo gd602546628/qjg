@@ -8,15 +8,19 @@ let saveUserInfo = function (state, userInfo) {
   state.sysAuthUrls = userInfo.sysAuthUrls
   state.sysUserBg = userInfo.sysUserBg
   state.JSESSIONID = userInfo.sessionId
+  state.sysDoor = userInfo.sysDoor
   localStore.setStorage('sysAuthUrls', state.sysAuthUrls)
   localStore.setStorage('sysUserBg', state.sysUserBg)
   localStore.setStorage('JSESSIONID', state.JSESSIONID)
+  localStore.setStorage('sysDoor', state.sysDoor)
 }
 let clearUserInfo = function (state) {
   state.sysAuthUrls = null
   state.sysUserBg = null
   state.JSESSIONID = null
+  state.sysDoor = null
   localStorage['sysAuthUrls'] = null
+  localStorage['sysDoor'] = null
   localStorage['sysUserBg'] = null
   localStorage['JSESSIONID'] = null
 }
