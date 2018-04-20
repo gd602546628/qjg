@@ -3,7 +3,7 @@
     <div class="project-category-manage-box">
       <el-scrollbar class="scroll-bar">
         <div class="scroll-bar-content">
-          <div class="title">分类管理</div>
+          <div class="title">选择区域</div>
           <!--  <div class="add-category">
               <span class="el-icon-plus"></span>
               <div>添加分类</div>
