@@ -6,6 +6,12 @@ class Card {
     this.addUrl = `${urlPre}card/add`
     this.getListUrl = `${urlPre}card/getList`
     this.deleteByIdUrl = `${urlPre}card/deleteById`
+    this.getMoneySumUrl = `${urlPre}card/getMoneySum`
+  }
+
+  async getMoneySum(params = {}) {
+    let data = await httpService.post(this.getMoneySumUrl, params)
+    return data
   }
 
   async add(params = {}) {

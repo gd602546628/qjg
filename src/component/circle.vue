@@ -32,6 +32,7 @@
       }
     },
     created(){
+      console.log(2222222)
     },
     mounted(){
       this.initSize()
