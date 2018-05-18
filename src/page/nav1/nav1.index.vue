@@ -12,14 +12,14 @@
           <i class="icon-gg title-icon"></i>
           <span slot="title">首页</span>
         </el-menu-item>
-        <el-menu-item index="advertiseManageIndex" v-if="sysAuth.advert">
+      <!--  <el-menu-item index="advertiseManageIndex" v-if="sysAuth.advert">
           <i class="icon-gg title-icon"></i>
           <span slot="title">广告管理</span>
         </el-menu-item>
         <el-menu-item index="areaManageIndex" v-if="sysAuth.sourceArea">
           <i class="icon-qygl title-icon"></i>
           <span slot="title">区域管理</span>
-        </el-menu-item>
+        </el-menu-item>-->
         <el-menu-item index="fileManage" v-if="sysAuth.sourceFile">
           <i class="icon-wjgl title-icon"></i>
           <span slot="title">文件管理</span>
