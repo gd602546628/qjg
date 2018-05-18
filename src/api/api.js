@@ -9,6 +9,8 @@ import sourceObject from './sourceObject' //项目管理
 import area from './area' // 区域管理
 import cate from './cate' // 分类
 import source from './source' // 资源
+import card from './card'
+
 let Api = {
   login,
   systemRole,
@@ -16,6 +18,7 @@ let Api = {
   sourceObject,
   area,
   cate,
-  source
+  source,
+  card
 }
 export default Api

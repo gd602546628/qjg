@@ -28,6 +28,20 @@
           <i class="icon-xm title-icon"></i>
           <span slot="title">项目管理</span>
         </el-menu-item>
+
+
+        <el-submenu index="addCoupon" v-if="sysAuth.coupon">
+          <template slot="title">
+            <i class="icon-select title-icon"></i>
+            <span>卡券管理</span>
+          </template>
+          <el-menu-item-group>
+            <el-menu-item index="addCoupon" v-if="sysAuth.systemRole">添加卡券</el-menu-item>
+            <el-menu-item index="couponManage" v-if="sysAuth.systemUser">卡券管理</el-menu-item>
+          </el-menu-item-group>
+        </el-submenu>
+
+
         <el-submenu index="systemManageIndex" v-if="sysAuth.system">
           <template slot="title">
             <i class="icon-select title-icon"></i>
@@ -50,8 +64,10 @@
 </template>
 <script>
   import {mapGetters} from 'vuex'
+  import {isTest} from '../../config/config'
+
   export default {
-    data(){
+    data() {
       return {
         showCategory: false,
         defaultActive: ''
@@ -59,7 +75,7 @@
     },
     computed: {
       ...mapGetters(['sysAuthUrls']),
-      sysAuth(){
+      sysAuth() {
         let authObj = {
           system: false, // 系统设置
           systemRole: false, //角色设置
@@ -67,7 +83,13 @@
           systemCate: false,//分类管理
           sourceArea: false,//区域管理
           sourceObject: false,//项目管理
-          advert: false//广告管理
+          advert: false,//广告管理
+          coupon: false, //优惠券管理
+        }
+        if (!isTest) {
+          for (let key in authObj) {
+            authObj[key] = true
+          }
         }
         let authMap = [
           {
@@ -101,6 +123,10 @@
           {
             url: '/sourceFile',
             target: 'sourceFile'
+          },
+          {
+            url: '/card',
+            target: 'coupon'
           }
         ]
         this.sysAuthUrls.forEach(item => {
@@ -113,11 +139,11 @@
         return authObj
       }
     },
-    created(){
+    created() {
       this.defaultActive = this.$route.meta.activeName || this.$route.name
     },
     methods: {
-      select(a, b, c){
+      select(a, b, c) {
         this.$router.push({
           name: a
         })

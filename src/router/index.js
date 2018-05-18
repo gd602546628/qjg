@@ -26,6 +26,10 @@ import fileManage from '@/page/nav1/fileManage/fileManage.vue'
 /*文件管理end*/
 import welcome from '@/page/nav1/welcome.vue'
 
+/*优惠券start*/
+import couponManage from '../page/nav1/couponManage/couponManage.vue'
+import addCoupon from '../page/nav1/couponManage/addCoupon.vue'
+/*优惠券end*/
 Vue.use(Router)
 
 export default new Router({
@@ -130,6 +134,16 @@ export default new Router({
               name: 'fileManage'
             },
             /*文件管理end*/
+            {
+              path: 'couponManage',
+              name: 'couponManage',
+              component: couponManage
+            },
+            {
+              path: 'addCoupon',
+              name: 'addCoupon',
+              component: addCoupon
+            }
           ]
         }
       ]

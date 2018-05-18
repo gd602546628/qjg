@@ -9,21 +9,27 @@ import './assets/css/common.scss'
 import './assets/css/font.scss'
 import store from './store/index'
 import filter from './filter/filter'
+import {isTest} from './config/config'
+
 Vue.use(filter)
 Vue.use(Element)
 Vue.config.productionTip = false
 
 /*权限验证*/
 router.beforeEach((to, form, next) => {
-  if (store.getters.isLogin) {
-    next()
-  } else {
-    if (to.name != 'login') {
-      store.dispatch({type: 'loginAction', routeName: to.name, params: to.params}).then(function () {
-      })
-    } else {
+  if (isTest) {
+    if (store.getters.isLogin) {
       next()
+    } else {
+      if (to.name != 'login') {
+        store.dispatch({type: 'loginAction', routeName: to.name, params: to.params}).then(function () {
+        })
+      } else {
+        next()
+      }
     }
+  } else {
+    next()
   }
 })
 

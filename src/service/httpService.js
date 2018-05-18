@@ -7,6 +7,7 @@ import store from '@/store/index'
 import {code} from '@/config/config'
 import router from '@/router/index'
 import {Message} from 'element-ui';
+import {isTest} from '../config/config'
 class Http {
   constructor() {
   }
@@ -14,13 +15,15 @@ class Http {
   async post(url, params) {
     let resultUrl = `${url};JSESSIONID=${store.getters.JSESSIONID}`
     let data = await axios.post(resultUrl, params)
-    if (data.data.code === code.NO_AUTHORITY) { // 无权限访问
-      Message({message: '登录已失效，请重新登录', type: 'error'})
-      store.dispatch({type: 'logoutAction'})
-      router.push({
-        name: 'login'
-      })
-      throw new Error()
+    if(isTest){
+      if (data.data.code === code.NO_AUTHORITY) { // 无权限访问
+        Message({message: '登录已失效，请重新登录', type: 'error'})
+        store.dispatch({type: 'logoutAction'})
+        router.push({
+          name: 'login'
+        })
+        throw new Error()
+      }
     }
     return data.data
   }
